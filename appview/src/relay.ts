@@ -100,8 +100,10 @@ export function startJetstream(ctx: AppContext) {
     let atUriParts: AtUriParts | undefined;
     if (event.commit.operation !== 'delete') {
       if (!TID.validate(event.commit.rkey)) return;
-      atUriParts = atUriToParts(event.commit.record.record);
-      if (!atUriParts) return;
+      if (event.commit.record.record) { 
+        atUriParts = atUriToParts(event.commit.record.record);
+        if (!atUriParts) return;
+      }
     }
     try {
       await userDbContext(event.did, async (db) => {
@@ -112,13 +114,13 @@ export function startJetstream(ctx: AppContext) {
             .executeTakeFirst();
           ctx.logger.info(`Deleted tagged record ${event.commit.rkey} from ${event.did}`);
         } else {
-          
           const exists = await db
             .selectFrom('taggedRecords')
             .where('rkey', '=', event.commit.rkey)
             .select(['rkey'])
             .executeTakeFirst();
           if (!exists) {
+            if (!atUriParts) return;
             const res = await db
               .insertInto('taggedRecords')
               .values({
@@ -126,7 +128,7 @@ export function startJetstream(ctx: AppContext) {
                 cid: event.commit.cid,
                 tag: event.commit.record.tag,
                 // This closure is ran immediately when the userDbContext is called, this should never be undefined
-                record: partsToAtUri(atUriParts!),
+                record: partsToAtUri(atUriParts),
                 updatedAt: Date.now(),
                 indexedAt: Date.now(),
               })
