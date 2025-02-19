@@ -14,8 +14,9 @@ export type InactiveSession = {
 }
 
 export type Session = 
-  { active: true } & ActiveSession 
-  | { active: false } & InactiveSession
+    { isDreary: () => boolean }
+  & ({ active: true } & ActiveSession 
+  | { active: false } & InactiveSession)
 
 export const sessionAssertActive = (session: Session): ActiveSession => {
   if (session.active) {
@@ -29,4 +30,5 @@ export const SessionCtx = createContext<Session>({
   active: false, 
   login: async () => { throw new Error('Session Context not set up yet') },
   loginInProcess: false,
+  isDreary: () => false,
 });

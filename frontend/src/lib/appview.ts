@@ -9,7 +9,14 @@ class HttpError extends Error {
   }
 }
 
-const apiBase = new URL(import.meta.env.DEV ? 'http://localhost:3001/xrpc/' : 'https://appview.atags.jeroba.xyz/xrpc/');
+const server = 
+  import.meta.env.VITE_APPVIEW
+  ? import.meta.env.VITE_APPVIEW
+  : import.meta.env.DEV 
+  ? 'http://localhost:3001' 
+  : 'https://appview.atags.jeroba.xyz'
+
+const apiBase = new URL(`${server}/xrpc/`);
 
 async function fetchJson(path: string | URL, options?: RequestInit) {
   const res = await fetch(new URL(path, apiBase), options);

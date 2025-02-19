@@ -49,7 +49,7 @@ const TaggedScreen = () => {
     <>
       <Navigation />
       <div class="flex my-5">
-        <div class="mx-auto shrink rounded-xl border border-gray-400 px-4 py-4">
+        <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink px-4 py-4">
           <Show when={!loadedTaggedPosts.length}>
             <p>No tagged records found</p>
           </Show>
@@ -58,7 +58,7 @@ const TaggedScreen = () => {
               <div class="flex justify-between py-1">
                 <div class="flex flex-col justify-center">
                   <A
-                    class="underline text-blue-500"
+                    class="underline text-blue-500 dark:text-light-pink"
                     href={
                       (item.parts?.collection === 'app.bsky.feed.post') 
                       ?  `https://bsky.app/profile/${item.parts.did}/post/${item.parts.rkey}`
@@ -69,7 +69,7 @@ const TaggedScreen = () => {
                 </div>
                 <Show when={session.active && session.did === params.did}>
                   <button
-                    class="cursor-pointer text-red-600 ml-3"
+                    class="cursor-pointer text-red-600 dark:text-theme-pink ml-3"
                     onClick={() => removeTagged(item.rkey)}>
                     <TagRemove />
                   </button>

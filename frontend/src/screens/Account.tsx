@@ -17,7 +17,7 @@ const Account = () => {
       <Switch>
         <Match when={session.active}>
           <div class="flex my-5">
-            <div class="mx-auto shrink rounded-xl border border-gray-400 flex justify-center">
+            <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink flex justify-center">
               <div class="divide-y divide-gray-400">
                 <button
                   class="py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-xl"
@@ -30,7 +30,7 @@ const Account = () => {
         </Match>
         <Match when={!session.active}>
           <div class="flex my-5">
-            <div class="mx-auto shrink rounded-xl border border-gray-400 flex justify-center">
+            <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink flex justify-center">
               <p class="py-2 px-4">You are not logged in</p>
             </div>
           </div>

@@ -18,14 +18,14 @@ const AddTagged = () => {
         </Match>
         <Match when={!session.active && session.loginInProcess}>
           <div class="flex justify-center">
-            <div class="shrink rounded-xl border border-gray-400 px-2 py-4 my-5">
+            <div class="shrink rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
               <p class="text-center">Logging in...</p>
             </div>
           </div>
         </Match>
         <Match when={!session.active && !session.loginInProcess}>
           <div class="flex justify-center">
-            <div class="shrink rounded-xl border border-gray-400 px-2 py-4 my-5">
+            <div class="shrink rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
               <p class="text-center">You are not logged in.</p>
             </div>
           </div>
@@ -88,11 +88,11 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
 
   return (
 
-    <div class="mx-auto max-w-lg rounded-xl border border-gray-400 px-2 py-4 my-5">
+    <div class="mx-auto max-w-lg rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
       <select
         disabled={loading()}
         onChange={(e) => setSelectedTagRkey(e.target.value.length ? e.target.value : undefined)}
-        class="block mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 p-2 mb-2"
+        class="block mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink p-2 mb-2"
       >
         <Switch>
           <Match when={!tags.length}>
@@ -115,7 +115,7 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
           id="atUriInput"
           disabled={loading()}
           value={atUriInput()}
-          class="rounded-lg grow border disabled:text-gray-400 border-gray-400 px-2 py-1"
+          class="rounded-lg grow border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
           onInput={(e) => setAtUriInput(e.currentTarget.value)} />
       </div>
       <Show when={error}>
@@ -124,7 +124,7 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
       <div class="flex justify-center mt-4">
         <button
           disabled={!selectedTagRkey() || loading()}
-          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 font-bold px-2 py-1 hover:bg-gray-100"
+          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
           onClick={() => tagRecord(selectedTagRkey()!, atUriInput())}
         >
           <Switch>

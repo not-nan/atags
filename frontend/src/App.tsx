@@ -73,6 +73,7 @@ function App() {
       did,
       rpc,
       logout,
+      isDreary: () => did === 'did:plc:hx53snho72xoj7zqt5uice4u'
     });
 
     localStorage.setItem('autoLogin', JSON.stringify({
@@ -102,6 +103,7 @@ function App() {
     active: false,
     login,
     loginInProcess: true,
+    isDreary: () => false,
   });
 
   autoLogin();

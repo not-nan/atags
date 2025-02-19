@@ -12,24 +12,25 @@ const Navigation = (props: { selected?: SelectableOptions }) => {
   const selectedClassList = (condition: boolean) => ({
     'font-bold': condition,
     'bg-gray-100': condition,
+    'dark:bg-darkish-pink': condition,
   });
 
   return (
     <div class="mx-auto flex justify-center my-4">
-      <div class="shrink flex justify-center rounded-xl border border-gray-400 divide-x divide-solid divide-gray-400">
+      <div class="shrink flex justify-center rounded-xl border border-gray-400 dark:border-theme-pink divide-x divide-solid divide-gray-400">
         <Switch>
           <Match when={session.active}>
             <button
               classList={selectedClassList(props.selected === 'tags')}
-              class="p-2 hover:bg-gray-100 rounded-l-xl"
+              class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-darkish-pink rounded-l-xl"
               onClick={() => navigate(`/${activeSession().did}/tag`)}>
-              Tags
+              Tag Categories
             </button>
             <button
               classList={selectedClassList(props.selected === 'tag-records')}
-              class="p-2 hover:bg-gray-100"
+              class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-darkish-pink"
               onClick={() => navigate('/tag-records')}>
-              Tag Records
+              Apply Tags
             </button>
             {/* 
           <button 
@@ -40,14 +41,14 @@ const Navigation = (props: { selected?: SelectableOptions }) => {
           */}
             <div
               classList={selectedClassList(props.selected === 'account')}
-              class="flex flex-col justify-center hover:bg-gray-100 rounded-r-xl px-1"
+              class="flex flex-col justify-center cursor-pointer dark:hover:bg-darkish-pink rounded-r-xl px-1"
               onClick={() => navigate('/account')}>
               <User />
             </div>
           </Match>
           <Match when={!session.active}>
             <button
-              class="p-2 hover:bg-gray-100 rounded-xl font-bold"
+              class="p-2 hover:bg-gray-100 cursor-pointer dark:hover:bg-darkish-pink rounded-xl font-bold"
               onClick={() => navigate(`/`)}>
               Go to login
             </button>

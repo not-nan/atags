@@ -54,7 +54,7 @@ const TagsScreen = () => {
             disableButtons={loadingDelete()}
             callback={(confirm) => deleteTag(confirm, deletingTag()?.rkey)} />
         </Show>
-        <div class="mx-auto shrink rounded-xl border border-gray-400 px-2 py-4 flex justify-center">
+        <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 flex justify-center">
           <div>
             <Show when={tags.loading}>
               <p>Loading tags...</p>
@@ -71,7 +71,7 @@ const TagsScreen = () => {
                     </Match>
                     <Match when={!addingTag()}>
                       <div class="flex justify-center pb-3">
-                        <button onClick={() => setAddingTag(true)} class="cursor-pointer"><Add /></button>
+                        <button onClick={() => setAddingTag(true)} class="cursor-pointer dark:text-theme-pink"><Add /></button>
                       </div>
                     </Match>
                   </Switch>
@@ -86,7 +86,7 @@ const TagsScreen = () => {
                         <div class="flex justify-between py-1">
                           <div class="flex flex-col justify-center">
                             <A
-                              class="underline text-blue-500 align-middle pr-4"
+                              class="underline text-blue-500 dark:text-light-pink align-middle pr-4"
                               href={`/${params.did}/tag/${item.rkey}`}>
                               {item.title.length ? item.title : item.rkey}
                             </A>
@@ -96,14 +96,14 @@ const TagsScreen = () => {
                               <div class="flex flex-col justify-center px-1">
                                 <button
                                   onClick={() => setDeletingTag(item)}
-                                  class="cursor-pointer text-red-600">
+                                  class="cursor-pointer text-red-600 dark:text-theme-pink">
                                   <Delete />
                                 </button>
                               </div>
                               <div class="flex flex-col justify-center pl-1">
                                 <button
                                   onClick={() => setEditingTag(item)}
-                                  class="cursor-pointer">
+                                  class="cursor-pointer dark:text-theme-pink">
                                   <Edit />
                                 </button>
                               </div>
@@ -173,13 +173,13 @@ const AddTags = (props: { mutate: MutateTags, done: () => void }) => {
   return (
     <div class="mb-4">
       <div class="flex justify-center mb-2">
-        <button class="cursor-pointer" onClick={() => props.done()}><Close /></button>
+        <button class="cursor-pointer dark:text-theme-pink" onClick={() => props.done()}><Close /></button>
       </div>
       <div class="flex justify-between">
         <label class="px-2 py-1 my-1">Title</label>
         <input
           id="titleInput"
-          class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+          class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
           disabled={loading()}
           onInput={(e) => setTitleInput(e.currentTarget.value)}
         />
@@ -188,7 +188,7 @@ const AddTags = (props: { mutate: MutateTags, done: () => void }) => {
         <label class="px-2 py-1 my-1">Description</label>
         <input
           id="descriptionInput"
-          class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+          class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
           disabled={loading()}
           onInput={(e) => setDescriptionInput(e.currentTarget.value)}
         />
@@ -198,7 +198,7 @@ const AddTags = (props: { mutate: MutateTags, done: () => void }) => {
       </Show>
       <div class="flex justify-center mt-2">
         <button
-          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 font-bold px-2 py-1 hover:bg-gray-100"
+          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
           disabled={loading()}
           onClick={() => createTag(titleInput(), descriptionInput())}
         >
@@ -207,7 +207,7 @@ const AddTags = (props: { mutate: MutateTags, done: () => void }) => {
               Creating...
             </Match>
             <Match when={!loading()}>
-              Create New Tag
+              Create New Tag Category
             </Match>
           </Switch>
         </button>
@@ -281,7 +281,7 @@ const EditTag = (props: { tag: XyzJerobaTagsGetTags.TagsView | undefined, mutate
           <label class="px-2 py-1 my-1">Title</label>
           <input
             id="titleInput"
-            class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+            class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
             disabled={loading()}
             value={titleInput()}
             onInput={(e) => setTitleInput(e.currentTarget.value)}
@@ -291,7 +291,7 @@ const EditTag = (props: { tag: XyzJerobaTagsGetTags.TagsView | undefined, mutate
           <label class="px-2 py-1 my-1">Description</label>
           <input
             id="descriptionInput"
-            class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+            class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
             disabled={loading()}
             value={descriptionInput()}
             onInput={(e) => setDescriptionInput(e.currentTarget.value)}
@@ -302,7 +302,7 @@ const EditTag = (props: { tag: XyzJerobaTagsGetTags.TagsView | undefined, mutate
         </Show>
         <div class="flex justify-center mt-2">
           <button
-            class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 font-bold px-2 py-1 hover:bg-gray-100"
+            class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100"
             disabled={loading()}
             onClick={() => editTag(titleInput(), descriptionInput())}
           >
