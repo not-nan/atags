@@ -29,38 +29,39 @@ const LoginScreen = () => {
     } finally {
       setLoading(false);
     }
-    
+
   }
 
   return (
-    <div class="mx-auto max-w-sm rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
-      <div class="flex justify-between">
-        <label class="px-2 py-1 my-1">Handle or did</label>
-        <input
-          id="didOrHandle"
-          class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
-          disabled={loading()}
-          onInput={(e) => setDidInput(e.currentTarget.value)}
-        />
-      </div>
-      <div class="flex justify-between">
-        <label class="px-2 py-1 my-1">App password</label>
-        <input
-          id="password"
-          type="password"
-          class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
-          disabled={loading()}
-          onInput={(e) => setPasswordInput(e.currentTarget.value)}
-        />
-      </div>
-      <Show when={error}>
-        <p class="text-center text-red-500 my-2">{error()}</p>
-      </Show>
-      <div class="flex justify-center mt-2">
-        <button
-          disabled={loading()}
-          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
-          onClick={() => login(didInput(), passwordInput())}>
+    <div class="flex justify-center">
+      <div class="shrink rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
+        <div class="flex justify-between">
+          <label class="px-2 py-1 my-1">Handle or did</label>
+          <input
+            id="didOrHandle"
+            class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+            disabled={loading()}
+            onInput={(e) => setDidInput(e.currentTarget.value)}
+          />
+        </div>
+        <div class="flex justify-between">
+          <label class="px-2 py-1 my-1">App password</label>
+          <input
+            id="password"
+            type="password"
+            class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+            disabled={loading()}
+            onInput={(e) => setPasswordInput(e.currentTarget.value)}
+          />
+        </div>
+        <Show when={error}>
+          <p class="text-center text-red-500 my-2">{error()}</p>
+        </Show>
+        <div class="flex justify-center mt-2">
+          <button
+            disabled={loading()}
+            class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+            onClick={() => login(didInput(), passwordInput())}>
             <Switch>
               <Match when={loading()}>
                 Loading...
@@ -69,7 +70,8 @@ const LoginScreen = () => {
                 Login
               </Match>
             </Switch>
-        </button>
+          </button>
+        </div>
       </div>
     </div>
   );
