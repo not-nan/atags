@@ -1,18 +1,19 @@
 import { Route, Router } from "@solidjs/router";
 import LoginScreen from "./screens/Login";
-import { Session, SessionCtx } from "./lib/auth";
+import { ActiveSession, LoginOptions, Session, SessionCtx } from "./lib/auth";
 import TagsScreen from "./screens/Tags";
 import TaggedScreen from "./screens/Tagged";
 import { resolveDid, resolveHandle } from "./lib/resolution";
-import { isDid } from "./lib/util";
+import { isDid, wait } from "./lib/util";
 import { getPdsEndpoint } from "@atcute/client/utils/did";
 import { AtpSessionData, CredentialManager, XRPC } from "@atcute/client";
 import { At } from "@atcute/client/lexicons";
 import { createStore } from "solid-js/store";
 import AddTagged from "./screens/AddTagged";
 import Account from "./screens/Account";
+import { createAuthorizationUrl, deleteStoredSession, finalizeAuthorization, getSession, OAuthUserAgent, resolveFromService } from "@atcute/oauth-browser-client";
 
-function isAtpSessionData(o: any): o is AtpSessionData { 
+function isAtpSessionData(o: any): o is AtpSessionData {
   return o.refreshJwt && o.accessJwt && o.handle && o.did;
 }
 
@@ -21,33 +22,50 @@ function App() {
     let successful = false;
     try {
       const autoLoginStr = localStorage.getItem('autoLogin');
-      if (!autoLoginStr) return;
-      const autoLoginInfo = JSON.parse(autoLoginStr);
-      if (!isAtpSessionData(autoLoginInfo)) {
-        return;
-      }
-      const didDoc = await resolveDid(autoLoginInfo.did);
-      const pds = getPdsEndpoint(didDoc);
-      if (!pds) {
-        console.error('Autologin failed due to invalid/unreachable pds');
-        return;
-      }
-      const manager = new CredentialManager({ service: pds });
-      try {
-        await manager.resume(autoLoginInfo);
-      } catch (err) {
-        console.error('Autologin failed', err);
-        return;
-      }
-      const rpc = new XRPC({ handler: manager });
+      if (autoLoginStr) {
+        const autoLoginInfo = JSON.parse(autoLoginStr);
+        if (!isAtpSessionData(autoLoginInfo)) {
+          return false;
+        }
+        const didDoc = await resolveDid(autoLoginInfo.did);
+        const pds = getPdsEndpoint(didDoc);
+        if (!pds) {
+          console.error('Autologin failed due to invalid/unreachable pds');
+          return false;
+        }
+        const manager = new CredentialManager({ service: pds });
+        try {
+          await manager.resume(autoLoginInfo);
+        } catch (err) {
+          console.error('Autologin failed', err);
+          return false;
+        }
+        const rpc = new XRPC({ handler: manager });
 
-      setSession({ 
-        active: true,
-        did: autoLoginInfo.did,
-        rpc,
-        logout,
-      });
-      successful = true;
+        setSession({
+          active: true,
+          type: 'password',
+          did: autoLoginInfo.did,
+          rpc,
+          logout,
+        });
+        successful = true;
+        return true;
+      } else {
+        const oauthDid = localStorage.getItem('oauthDid');
+        if (!oauthDid || !isDid(oauthDid)) return false;
+        const session = await getSession(oauthDid, { allowStale: true });
+        const agent = new OAuthUserAgent(session);
+        setSession({
+          active: true,
+          type: 'oauth',
+          did: session.info.sub, 
+          rpc: new XRPC({ handler: agent }), 
+          logout,
+        })
+        successful = true;
+        return true;
+      }
     } catch (err) {
       console.error('Autologin failed', err);
     } finally {
@@ -55,48 +73,122 @@ function App() {
         logout();
       }
     }
+    return successful;
   }
 
-  const login = async (didOrHandle: string, password: string) => {
-    const did: At.DID = isDid(didOrHandle)
-      ? didOrHandle
-      : await resolveHandle(didOrHandle);
+  const finalizeOauth = async () => {
+    try {
+      // `createAuthorizationUrl` asks for the server to redirect here with the
+      // parameters assigned in the hash, not the search string.
+      const params = new URLSearchParams(location.hash.slice(1));
+
+      if (params.size === 0) {
+        return false;
+      }
+
+      // this is optional, but after retrieving the parameters, we should ideally
+      // scrub it from history to prevent this authorization state to be replayed,
+      // just for good measure.
+      history.replaceState(null, '', location.pathname + location.search);
+
+      const session = await finalizeAuthorization(params);
+      const agent = new OAuthUserAgent(session);
+      const did = session.info.sub;
+
+      console.log('Finalize oauth', did);
+      localStorage.setItem('oauthDid', did);
+
+      setSession({
+        active: true,
+        type: 'oauth',
+        did,
+        rpc: new XRPC({ handler: agent }),
+        logout
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  const login = async (options: LoginOptions): Promise<ActiveSession> => {
+    const did: At.DID = isDid(options.didOrHandle)
+      ? options.didOrHandle
+      : await resolveHandle(options.didOrHandle);
     const didDoc = await resolveDid(did);
     const pds = getPdsEndpoint(didDoc);
     if (!pds) throw new Error('DID Doc does not contain a pds reference');
-    const manager = new CredentialManager({ service: pds });
-    await manager.login({ identifier: did, password: password });
-    const rpc = new XRPC({ handler: manager });
 
-    setSession({ 
-      active: true,
-      did,
-      rpc,
-      logout,
-      isDreary: () => did === 'did:plc:hx53snho72xoj7zqt5uice4u'
-    });
+    if (options.type === 'password') {
+      const manager = new CredentialManager({ service: pds });
+      await manager.login({ identifier: did, password: options.password });
+      const rpc = new XRPC({ handler: manager });
 
-    localStorage.setItem('autoLogin', JSON.stringify({
-      refreshJwt: manager.session?.refreshJwt,
-      accessJwt: manager.session?.accessJwt,
-      handle: manager.session?.handle,
-      did,
-    }));
-    
-    return {
-      did,
-      rpc,
-      logout
-    };
+      setSession({
+        active: true,
+        type: 'password',
+        did,
+        rpc,
+        logout,
+        isDreary: () => did === 'did:plc:hx53snho72xoj7zqt5uice4u'
+      });
+
+      localStorage.setItem('autoLogin', JSON.stringify({
+        refreshJwt: manager.session?.refreshJwt,
+        accessJwt: manager.session?.accessJwt,
+        handle: manager.session?.handle,
+        did,
+      }));
+
+      return {
+        type: 'password',
+        did,
+        rpc,
+        logout
+      };
+    } else {
+      const { metadata } = await resolveFromService(pds);
+      const authUrl = await createAuthorizationUrl({
+        metadata: metadata,
+        identity: {
+          id: did,
+          raw: options.didOrHandle,
+          pds: new URL(pds),
+        },
+        scope: import.meta.env.VITE_OAUTH_SCOPE,
+      });
+      await wait(200);
+      window.location.assign(authUrl);
+
+      await new Promise((_resolve, reject) => {
+        const listener = () => {
+          reject(new Error(`Login request was aborted`));
+        };
+
+        window.addEventListener('pageshow', listener, { once: true });
+      });
+      throw new Error(`Login request was aborted`);
+    }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    const oauthDid = localStorage.getItem('oauthDid');
     localStorage.removeItem('autoLogin');
+    localStorage.removeItem('oauthDid');
     setSession({
       active: false,
       login,
       loginInProcess: false,
     });
+    if (!oauthDid || !isDid(oauthDid)) return;
+    try {
+      const session = await getSession(oauthDid, { allowStale: true });
+      const agent = new OAuthUserAgent(session);
+      await agent.signOut();
+    } catch {
+      deleteStoredSession(oauthDid);
+    }
   }
 
   const [session, setSession] = createStore<Session>({
@@ -106,14 +198,18 @@ function App() {
     isDreary: () => false,
   });
 
-  autoLogin();
+  (async () => {
+    if (!await autoLogin()) {
+      await finalizeOauth();
+    }
+  })()
 
   return (
     <SessionCtx.Provider value={session}>
       <Router>
         <Route path="/" component={LoginScreen} />
-        <Route path="/:did/tag" component={TagsScreen}/>
-        <Route path="/:did/tag/:tag" component={TaggedScreen}/>
+        <Route path="/:did/tag" component={TagsScreen} />
+        <Route path="/:did/tag/:tag" component={TaggedScreen} />
         <Route path="/tag-records" component={AddTagged} />
         <Route path="/account" component={Account} />
       </Router>
