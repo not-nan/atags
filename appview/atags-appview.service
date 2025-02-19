@@ -1,0 +1,15 @@
+[Unit]
+Description=Atags Appview
+
+[Service]
+ExecStart=/var/www/atags-appview/index.ts
+Restart=always
+User=http
+# Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
+Group=http
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/var/www/atags-appview
+
+[Install]
+WantedBy=multi-user.target

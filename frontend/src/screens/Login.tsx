@@ -1,0 +1,78 @@
+import { createEffect, createSignal, Match, Show, Switch, useContext } from "solid-js";
+import { SessionCtx } from "../lib/auth";
+import { useNavigate } from "@solidjs/router";
+
+const LoginScreen = () => {
+  const session = useContext(SessionCtx);
+  const navigate = useNavigate();
+  const [didInput, setDidInput] = createSignal('');
+  const [passwordInput, setPasswordInput] = createSignal('');
+  const [loading, setLoading] = createSignal(false);
+  const [error, setError] = createSignal<string | undefined>();
+
+  createEffect(() => {
+    if (session.active) {
+      navigate(`/${session.did}/tag`, { replace: true });
+    }
+  });
+
+  const login = async (didOrHandle: string, password: string) => {
+    if (session.active) return;
+    setLoading(true);
+    try {
+      const { did } = await session.login(didOrHandle, password);
+      navigate(`/${did}/tag`, { replace: true });
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message ?? JSON.stringify(err));
+      return;
+    } finally {
+      setLoading(false);
+    }
+    
+  }
+
+  return (
+    <div class="mx-auto max-w-sm rounded-xl border border-gray-400 px-2 py-4 my-5">
+      <div class="flex justify-between">
+        <label class="px-2 py-1 my-1">Handle or did</label>
+        <input
+          id="didOrHandle"
+          class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+          disabled={loading()}
+          onInput={(e) => setDidInput(e.currentTarget.value)}
+        />
+      </div>
+      <div class="flex justify-between">
+        <label class="px-2 py-1 my-1">App password</label>
+        <input
+          id="password"
+          type="password"
+          class="rounded-lg border disabled:text-gray-400 border-gray-400 px-2 py-1 my-1"
+          disabled={loading()}
+          onInput={(e) => setPasswordInput(e.currentTarget.value)}
+        />
+      </div>
+      <Show when={error}>
+        <p class="text-center text-red-500 my-2">{error()}</p>
+      </Show>
+      <div class="flex justify-center mt-2">
+        <button
+          disabled={loading()}
+          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 font-bold px-2 py-1 hover:bg-gray-100"
+          onClick={() => login(didInput(), passwordInput())}>
+            <Switch>
+              <Match when={loading()}>
+                Loading...
+              </Match>
+              <Match when={!loading()}>
+                Login
+              </Match>
+            </Switch>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default LoginScreen;

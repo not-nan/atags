@@ -1,0 +1,78 @@
+{
+  "lexicon": 1,
+  "id": "xyz.jeroba.tags.getTaggedPosts",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Get tagged posts for a tag in a repo",
+      "parameters": {
+        "type": "params",
+        "required": [
+          "repo",
+          "tag"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string",
+            "format": "did"
+          },
+          "tag": {
+            "type": "string",
+            "format": "tid"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50
+          },
+          "cursor": { "type": "string" }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "taggedPosts"
+          ],
+          "properties": {
+            "cursor": { "type": "string" },
+            "taggedPosts": {
+              "type": "array",
+              "items": {
+                "type": "ref",
+                "ref": "#taggedPostsView"
+              }
+            }
+          }
+        }
+      }
+    },
+    "taggedPostsView": {
+        "type": "object",
+        "required": [
+          "rkey",
+          "cid",
+          "record"
+        ],
+        "properties": {
+          "rkey": {
+            "type": "string",
+            "format": "tid"
+          },
+          "cid": {
+            "type": "string",
+            "format": "cid"
+          },
+          "record": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "indexedAt": {
+            "type": "integer"
+          }
+        }
+      }
+  }
+}

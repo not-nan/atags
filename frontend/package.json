@@ -1,0 +1,26 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lex": "npx lex-cli generate ../lexicons/xyz/jeroba/tags/*.json -o ./src/lib/lexicon.ts"
+  },
+  "dependencies": {
+    "@atcute/client": "^2.0.7",
+    "@atcute/tid": "^1.0.2",
+    "@solidjs/router": "^0.15.3",
+    "@tailwindcss/vite": "^4.0.6",
+    "solid-js": "^1.9.4",
+    "tailwindcss": "^4.0.6"
+  },
+  "devDependencies": {
+    "@atcute/lex-cli": "^1.0.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.1.0",
+    "vite-plugin-solid": "^2.11.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "xyz.jeroba.tags.tagged",
+  "lexicon": 1,
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A tag on a record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "tag",
+          "record"
+        ],
+        "properties": {
+          "tag": {
+            "type": "string",
+            "format": "tid"
+          },
+          "record": {
+            "type": "string",
+            "format": "at-uri"
+          }
+        }
+      }
+    }
+  }
+}

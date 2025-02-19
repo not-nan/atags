@@ -1,0 +1,65 @@
+{
+  "lexicon": 1,
+  "id": "xyz.jeroba.tags.getTags",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Get tags for a repo",
+      "parameters": {
+        "type": "params",
+        "required": [
+          "repo"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string",
+            "format": "did"
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "tags"
+          ],
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": { "type": "ref", "ref": "#tagsView" }
+            }
+          }
+        }
+      }
+    },
+    "tagsView": {
+      "type": "object",
+      "required": [
+        "rkey",
+        "cid",
+        "title"
+      ],
+      "properties": {
+        "rkey": {
+          "type": "string",
+          "format": "tid"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 3000,
+          "maxGraphemes": 300
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 12000,
+          "maxGraphemes": 1200
+        }
+      }
+    }
+  }
+}

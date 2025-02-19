@@ -1,0 +1,29 @@
+{
+  "id": "xyz.jeroba.tags.tag",
+  "lexicon": 1,
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A tag definition",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 3000,
+            "maxGraphemes": 300
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 12000,
+            "maxGraphemes": 1200
+          }
+        }
+      }
+    }
+  }
+}
