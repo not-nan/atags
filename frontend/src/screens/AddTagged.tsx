@@ -1,15 +1,17 @@
 import { createResource, createSignal, For, Match, Show, Switch, useContext } from "solid-js";
 import { ActiveSession, sessionAssertActive, SessionCtx } from "../lib/auth";
 import { getTags } from "../lib/appview";
-import { atUriToParts, partsToAtUri } from "../lib/util";
+import { atUriToParts, isDid, partsToAtUri } from "../lib/util";
 import Navigation from "../components/Navigation";
+import * as TID from "@atcute/tid";
+import { At } from "@atcute/client/lexicons";
+import { resolveHandle } from "../lib/resolution";
 
 const AddTagged = () => {
   const session = useContext(SessionCtx);
   return (
     <>
       <Navigation selected="tag-records" />
-
       <Switch>
         <Match when={session.active}>
           <AddTaggedInner session={sessionAssertActive(session)} />
@@ -43,9 +45,26 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
   const tagRecord = async (tagRkey: string, atUri: string) => {
     setLoading(true);
     try {
+      let url: string;
       const atUriParts = atUriToParts(atUri);
-      if (!atUriParts) {
-        throw new Error('Invalid At Uri');
+      if (atUriParts) {
+        url = partsToAtUri(atUriParts);
+      } else {
+        try {
+          const urlParts = new URL(atUri);
+          if (urlParts.host !== 'bsky.app') throw '';
+          const path = urlParts.pathname.substring(1).split('/');
+          if (path.length < 4) throw '';
+          if (path[0] !== 'profile' || path[2] !== 'post' || !TID.validate(path[3])) throw '';
+          const didOrHandle = path[1];
+          const did: At.DID =
+            isDid(didOrHandle)
+            ? didOrHandle
+            : await resolveHandle(didOrHandle);
+          url = partsToAtUri({ did, collection: 'app.bsky.feed.post', rkey: path[3] });
+        } catch {
+          throw new Error('Invalid At Uri Or URL');
+        }
       }
       await props.session.rpc.call('com.atproto.repo.createRecord', {
         data: {
@@ -53,7 +72,7 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
           collection: 'xyz.jeroba.tags.tagged',
           record: {
             tag: tagRkey,
-            record: partsToAtUri(atUriParts),
+            record: url,
           }
         }
       });
@@ -75,14 +94,22 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
         onChange={(e) => setSelectedTagRkey(e.target.value.length ? e.target.value : undefined)}
         class="block mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 p-2 mb-2"
       >
-        <option value=""></option>
+        <Switch>
+          <Match when={!tags.length}>
+            <option value="">Select a tag category</option>
+          </Match>
+          <Match when={tags.length}>
+          <option value=""></option>
+          </Match>
+        </Switch>
+        
         <For each={tags()}>
           {(item) => <option value={item.rkey}>{(item.title.length) ? item.title : item.rkey}</option>}
         </For>
       </select>
       <div class="flex justify-between">
         <div class="flex flex-col justify-center">
-          <label class="px-2">At Uri</label>
+          <label class="px-2">At Uri or URL</label>
         </div>
         <input
           id="atUriInput"
@@ -105,7 +132,7 @@ const AddTaggedInner = (props: { session: ActiveSession }) => {
               Tagging...
             </Match>
             <Match when={!loading()}>
-              Tag Record
+              Apply Tag to Record
             </Match>
           </Switch>
         </button>

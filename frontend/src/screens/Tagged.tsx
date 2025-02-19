@@ -6,20 +6,23 @@ import { createStore } from "solid-js/store";
 import { SessionCtx } from "../lib/auth";
 import { TagRemove } from "../assets/icons";
 import Navigation from "../components/Navigation";
+import { AtUriParts, atUriToParts } from "../lib/util";
+
+type TaggedView = XyzJerobaTagsGetTaggedPosts.TaggedPostsView & { parts: AtUriParts };
 
 const TaggedScreen = () => {
   const params = useParams();
   const session = useContext(SessionCtx);
   const [newCursor, setNewCursor] = createSignal<string | undefined>();
   const [cursor, setCursor] = createSignal<string | undefined>();
-  const [loadedTaggedPosts, setLoadedTaggedPosts] = createStore<XyzJerobaTagsGetTaggedPosts.TaggedPostsView[]>([]);
+  const [loadedTaggedPosts, setLoadedTaggedPosts] = createStore<TaggedView[]>([]);
 
   const [loadTagged] = createResource(
     () => ({ did: params.did as At.DID, tag: params.tag, cursor: cursor() }),
     ({ did, tag, cursor }) => getTagged(did, tag, cursor).then(({ taggedPosts, cursor }) => {
       setNewCursor(cursor);
       for (const post of taggedPosts) {
-        setLoadedTaggedPosts(loadedTaggedPosts.length, post);
+        setLoadedTaggedPosts(loadedTaggedPosts.length, { ...post, parts: atUriToParts(post.record) });
       }
       return { taggedPosts };
     })
@@ -56,7 +59,10 @@ const TaggedScreen = () => {
                 <div class="flex flex-col justify-center">
                   <A
                     class="underline text-blue-500"
-                    href={`https://pdsls.dev/${item.record}`}
+                    href={
+                      (item.parts?.collection === 'app.bsky.feed.post') 
+                      ?  `https://bsky.app/profile/${item.parts.did}/post/${item.parts.rkey}`
+                      : `https://pdsls.dev/${item.record}`}
                     target="_blank">
                     {item.record}
                   </A>

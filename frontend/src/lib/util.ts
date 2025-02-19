@@ -14,7 +14,7 @@ export const isDid = (did: string): did is At.DID => {
   return /^did:([a-z]+):([a-zA-Z0-9._:%-]*[a-zA-Z0-9._-])$/.test(did);
 };
 
-type AtUriParts = { did: At.DID, collection: string, rkey: string }
+export type AtUriParts = { did: At.DID, collection: string, rkey: string }
 
 export function atUriToParts(atUri: string): AtUriParts | undefined {
   if (!atUri.startsWith('at://')) return;
