@@ -1,5 +1,10 @@
 import { At } from "@atcute/client/lexicons";
 
+export type Equal<A, B> = 
+  A extends B ? B extends A ? A : never : never;
+
+export type ValuesOf<T> = T[keyof T];
+
 export function wait(ms: number) {
   return new Promise((resolve, reject) => {
     try {
@@ -14,7 +19,8 @@ export const isDid = (did: string): did is At.DID => {
   return /^did:([a-z]+):([a-zA-Z0-9._:%-]*[a-zA-Z0-9._-])$/.test(did);
 };
 
-export type AtUriParts = { did: At.DID, collection: string, rkey: string }
+export type AtUriPartsFor<C extends string> = { did: At.DID, collection: C, rkey: string }
+export type AtUriParts = AtUriPartsFor<string>;
 
 export function atUriToParts(atUri: string): AtUriParts | undefined {
   if (!atUri.startsWith('at://')) return;

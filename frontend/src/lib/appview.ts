@@ -1,4 +1,6 @@
 import { At, XyzJerobaTagsGetTaggedPosts, XyzJerobaTagsGetTags } from "@atcute/client/lexicons";
+import { atUriToParts } from "./util";
+import { TaggedViewSkeleton } from "../screens/Tagged/views";
 
 class HttpError extends Error {
   code: number;
@@ -34,10 +36,10 @@ export async function getTags(did: At.DID) {
 }
 
 export async function getTagged(did: At.DID, tagRkey: string, cursor?: string)
-  : Promise<{ taggedPosts: XyzJerobaTagsGetTaggedPosts.TaggedPostsView[], cursor?: string }> {
+  : Promise<{ taggedPosts: TaggedViewSkeleton[], cursor?: string }> {
   let url = `xyz.jeroba.tags.getTaggedPosts?repo=${did}&tag=${tagRkey}`;
   if (cursor) url += `&cursor=${cursor}`;
   // TODO: Validation
   const res = (await fetchJson(url) as XyzJerobaTagsGetTaggedPosts.Output);
-  return { taggedPosts: res.taggedPosts, cursor: res.cursor };
+  return { taggedPosts: res.taggedPosts.map(t => ({ ...t, uri: atUriToParts(t.record)! })), cursor: res.cursor };
 }

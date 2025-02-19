@@ -1,14 +1,17 @@
-import { At, XyzJerobaTagsGetTaggedPosts } from "@atcute/client/lexicons";
+import { At } from "@atcute/client/lexicons";
 import { A, useParams } from "@solidjs/router";
-import { createResource, createSignal, For, Show, useContext } from "solid-js";
-import { getTagged } from "../lib/appview";
+import { Accessor, createResource, createSignal, For, JSX, Match, Show, Switch, useContext } from "solid-js";
+import { getTagged } from "../../lib/appview";
 import { createStore } from "solid-js/store";
-import { SessionCtx } from "../lib/auth";
-import { TagRemove } from "../assets/icons";
-import Navigation from "../components/Navigation";
-import { AtUriParts, atUriToParts } from "../lib/util";
+import { SessionCtx } from "../../lib/auth";
+import { Loading, TagRemove } from "../../assets/icons";
+import Navigation from "../../components/Navigation";
+import { addViews, TaggedViewSkeleton } from "./views";
 
-type TaggedView = XyzJerobaTagsGetTaggedPosts.TaggedPostsView & { parts: AtUriParts };
+export type TaggedView = {
+  skeleton: TaggedViewSkeleton,
+  content: Accessor<(() => JSX.Element) | undefined>,
+}
 
 const TaggedScreen = () => {
   const params = useParams();
@@ -21,9 +24,9 @@ const TaggedScreen = () => {
     () => ({ did: params.did as At.DID, tag: params.tag, cursor: cursor() }),
     ({ did, tag, cursor }) => getTagged(did, tag, cursor).then(({ taggedPosts, cursor }) => {
       setNewCursor(cursor);
-      for (const post of taggedPosts) {
-        setLoadedTaggedPosts(loadedTaggedPosts.length, { ...post, parts: atUriToParts(post.record) });
-      }
+
+      addViews(taggedPosts, loadedTaggedPosts, setLoadedTaggedPosts);
+
       return { taggedPosts };
     })
   );
@@ -35,7 +38,7 @@ const TaggedScreen = () => {
 
   const removeTagged = async (rkey: string) => {
     if (!session.active) return;
-    setLoadedTaggedPosts(loadedTaggedPosts.filter(p => p.rkey !== rkey));
+    setLoadedTaggedPosts(loadedTaggedPosts.filter(p => p.skeleton.rkey !== rkey));
     await session.rpc.call('com.atproto.repo.deleteRecord', {
       data: {
         repo: session.did,
@@ -55,22 +58,21 @@ const TaggedScreen = () => {
           </Show>
           <For each={loadedTaggedPosts}>
             {(item) => (
-              <div class="flex justify-between py-1">
-                <div class="flex flex-col justify-center">
-                  <A
-                    class="underline text-blue-500 dark:text-light-pink"
-                    href={
-                      (item.parts?.collection === 'app.bsky.feed.post') 
-                      ?  `https://bsky.app/profile/${item.parts.did}/post/${item.parts.rkey}`
-                      : `https://pdsls.dev/${item.record}`}
-                    target="_blank">
-                    {item.record}
-                  </A>
-                </div>
+              <div class="flex justify-between">
+                <Switch>
+                  <Match when={item.content()}>
+                    {item.content()!()}
+                  </Match>
+                  <Match when={!item.content()}>
+                    <div class="flex grow justify-center">
+                      <Loading />
+                    </div>
+                  </Match>
+                </Switch>
                 <Show when={session.active && session.did === params.did}>
                   <button
                     class="cursor-pointer text-red-600 dark:text-theme-pink ml-3"
-                    onClick={() => removeTagged(item.rkey)}>
+                    onClick={() => removeTagged(item.skeleton.rkey)}>
                     <TagRemove />
                   </button>
                 </Show>
