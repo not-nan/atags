@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import * as t from "tschema";
 import { userDbReadOnlyContext } from "./userDb/init.ts";
-import type { XRPC } from "@atcute/client";
+import type { CredentialManager } from "@atcute/client";
+import { Readable } from "node:stream";
 
 const GetTagsSchema = t.object({
   repo: t.string()
@@ -22,7 +23,7 @@ const ProxyBskyGetPostsSchema = t.object({
 type ProxyBskyGetPostsI = t.Infer<typeof ProxyBskyGetPostsSchema>;
 
 type RoutesOptions = {
-  bskyRpc: XRPC | undefined,
+  bskyManager: CredentialManager | undefined,
 }
 
 function routes(fastify: FastifyInstance, options: RoutesOptions) {
@@ -73,16 +74,25 @@ function routes(fastify: FastifyInstance, options: RoutesOptions) {
     '/xrpc/app.bsky.feed.getPosts',
     { schema: { querystring: ProxyBskyGetPostsSchema } },
     async (req, res) => {
-      if (!options.bskyRpc) {
+      if (!options.bskyManager) {
         res.code(500).send();
         return;
       }
-      const result = await options.bskyRpc.get('app.bsky.feed.getPosts', {
-        params: {
-          uris: req.query.uris,
+
+      const mapped = req.query.uris.map(uri => `uris=${uri}`);
+      const result = await options.bskyManager.fetch(
+        `${options.bskyManager.serviceUrl}/xrpc/app.bsky.feed.getPosts?${mapped.join('&')}`, {
+        headers: {
+          Authorization: `Bearer ${options.bskyManager.session?.accessJwt}`
         }
       });
-      res.code(200).send(result.data);
+
+      if (!result.body) {
+        res.status(result.status).send();
+      } else {
+        res.status(result.status).type(result.headers.get('content-type') ?? 'text/plain');
+        return Readable.fromWeb(result.body);
+      }
     }
   );
 }
