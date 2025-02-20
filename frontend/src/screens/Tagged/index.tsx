@@ -74,7 +74,7 @@ const TaggedScreen = () => {
                     </Match>
                   </Switch>
                   <div class="flex ml-3">
-                    <A class="flex flex-col justify-center" href={item.appviewUrl} target="_blank"><OpenRecord/></A>
+                    <A class="flex flex-col justify-center dark:text-theme-pink" href={item.appviewUrl} target="_blank"><OpenRecord/></A>
                     <Show when={session.active && session.did === params.did}>
                       <button
                         class="cursor-pointer text-red-600 dark:text-theme-pink"
@@ -84,7 +84,7 @@ const TaggedScreen = () => {
                     </Show>
                   </div>
                 </div>
-                <hr class="text-gray-300"/>
+                <hr class="text-gray-300 dark:text-darkish-pink"/>
               </>)}
           </For>
           <Show when={loadTagged.loading}>
