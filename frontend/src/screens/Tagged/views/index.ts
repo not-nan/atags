@@ -6,13 +6,14 @@ import { TaggedView } from "..";
 import { createSignal, JSX } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import fallbackView from "./fallback";
+import { Session } from "../../../lib/auth";
 
 export type TaggedViewSkeleton = ReplaceAtUriTo<XyzJerobaTagsGetTaggedPosts.TaggedPostsView, 'record', 'uri'>;
 export type ToHydrateView = { skeleton: TaggedViewSkeleton, setRender: (render: () => JSX.Element) => void};
 
 export type RecordView<Collection extends string> = {
   collection: Collection,
-  hydrate: (views: ToHydrateView[]) => Promise<void>,
+  hydrate: (views: ToHydrateView[], session: Session) => Promise<void>,
   getAppviewLink: (uri: AtUriParts) => string,
 }
 
@@ -38,7 +39,11 @@ function isSupportedView(collection: string): collection is keyof TypedViews {
   return viewKeys.includes(collection);
 }
 
-export async function addViews(skeletons: TaggedViewSkeleton[], store: TaggedView[], setStore: SetStoreFunction<TaggedView[]>) {
+export async function addViews(
+  skeletons: TaggedViewSkeleton[], 
+  store: TaggedView[], 
+  setStore: SetStoreFunction<TaggedView[]>,
+  session: Session,) {
   const toHydrateViews: Record<string, ToHydrateView[]> = {};
   for (const view in typedViews) {
     toHydrateViews[view] = [];
@@ -64,6 +69,6 @@ export async function addViews(skeletons: TaggedViewSkeleton[], store: TaggedVie
   await Promise.all([...Object.keys(typedViews).map(viewKeyRaw => {
     const viewKey = viewKeyRaw as keyof TypedViews;
     const view = typedViews[viewKey];
-    return view.hydrate(toHydrateViews[viewKey]);
-  }), (async () => fallbackView.hydrate(toHydrateViews['fallback']))()]);
+    return view.hydrate(toHydrateViews[viewKey], session);
+  }), (async () => fallbackView.hydrate(toHydrateViews['fallback'], session))()]);
 }

@@ -4,6 +4,7 @@ import { getBskyPosts } from "../../../lib/appview";
 import NotFound from "./NotFound";
 import { AppBskyEmbedImages, AppBskyFeedDefs, AppBskyFeedPost } from "@atcute/client/lexicons";
 import { Match, Switch } from "solid-js";
+import { Session } from "../../../lib/auth";
 
 const Render = (props: { post: ReplaceAtUri<AppBskyFeedDefs.PostView, 'uri'> }) => {
   const record = props.post.record as AppBskyFeedPost.Record;
@@ -63,10 +64,13 @@ const Image = (props: { image: AppBskyEmbedImages.ViewImage, class?: string }) =
   return <img class={`w-full border border-gray-300 object-cover ${props.class ?? ''}`} src={props.image.fullsize} alt={props.image.alt} />
 }
 
-const hydrate = async (views: ToHydrateView[]) => {
+const hydrate = async (views: ToHydrateView[], session: Session) => {
   const chunkSize = 25;
   for (let startOfChunk = 0, chunk = views.slice(0, chunkSize); chunk.length; startOfChunk += chunkSize, chunk = views.slice(startOfChunk, startOfChunk+chunkSize)) {
-    const posts = (await getBskyPosts(chunk.map(v => partsToAtUri(v.skeleton.uri))))
+    const uris = chunk.map(v => partsToAtUri(v.skeleton.uri));
+    const posts = (session.active
+      ? (await session.rpc.get('app.bsky.feed.getPosts', {params: { uris }})).data.posts
+      : (await getBskyPosts(uris)))
       .map(post => ({
         ...post,
         uri: atUriToParts(post.uri)!,

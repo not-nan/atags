@@ -26,7 +26,7 @@ const TaggedScreen = () => {
     ({ did, tag, cursor }) => getTagged(did, tag, cursor).then(({ taggedPosts, cursor }) => {
       setNewCursor(cursor);
 
-      addViews(taggedPosts, loadedTaggedPosts, setLoadedTaggedPosts);
+      addViews(taggedPosts, loadedTaggedPosts, setLoadedTaggedPosts, session);
 
       return { taggedPosts };
     })
