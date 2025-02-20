@@ -1,14 +1,16 @@
 import { A } from "@solidjs/router";
 import { RecordView, TaggedViewSkeleton, ToHydrateView } from ".";
+import { AtUriParts, partsToAtUri } from "../../../lib/util";
 
 const Render = (props: { view: TaggedViewSkeleton }) => {
+  const aturi = partsToAtUri(props.view.uri);
   return (
     <div class="flex flex-col justify-center">
       <A
         class="underline text-blue-500 dark:text-light-pink"
-        href={`https://pdsls.dev/${props.view.record}`}
+        href={`https://pdsls.dev/${aturi}`}
         target="_blank">
-        {props.view.record}
+        {aturi}
       </A>
     </div>
   )
@@ -20,9 +22,12 @@ const hydrate = async (views: ToHydrateView[]) => {
   }
 }
 
+const getAppviewLink = (uri: AtUriParts) => `https://pdsls.dev/${partsToAtUri(uri)}`;
+
 export const fallbackView: RecordView<string> = {
   collection: '*',
   hydrate,
+  getAppviewLink,
 }
 
 export default fallbackView;

@@ -1,5 +1,5 @@
 import { XyzJerobaTagsGetTaggedPosts } from "@atcute/client/lexicons";
-import { AtUriParts, Equal } from "../../../lib/util";
+import { AtUriParts, Equal, ReplaceAtUriTo } from "../../../lib/util";
 import bskyView from "./bsky";
 import whtwndView from "./whtwnd";
 import { TaggedView } from "..";
@@ -7,12 +7,13 @@ import { createSignal, JSX } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import fallbackView from "./fallback";
 
-export type TaggedViewSkeleton = Exclude<XyzJerobaTagsGetTaggedPosts.TaggedPostsView, 'uri'> & { uri: AtUriParts; };
+export type TaggedViewSkeleton = ReplaceAtUriTo<XyzJerobaTagsGetTaggedPosts.TaggedPostsView, 'record', 'uri'>;
 export type ToHydrateView = { skeleton: TaggedViewSkeleton, setRender: (render: () => JSX.Element) => void};
 
 export type RecordView<Collection extends string> = {
   collection: Collection,
   hydrate: (views: ToHydrateView[]) => Promise<void>,
+  getAppviewLink: (uri: AtUriParts) => string,
 }
 
 type RecordViews<Views extends object> = {
@@ -47,7 +48,15 @@ export async function addViews(skeletons: TaggedViewSkeleton[], store: TaggedVie
   for (const skeleton of skeletons) {
     const key = isSupportedView(skeleton.uri.collection) ? skeleton.uri.collection : 'fallback';
     const [content, setContent] = createSignal<(() => JSX.Element) | undefined>();
-    const obj = { skeleton, content, setRender: (render: () => JSX.Element) => setContent(() => render)};
+    const obj = { 
+      skeleton, 
+      content, 
+      setRender: (render: () => JSX.Element) => setContent(() => render),
+      appviewUrl: 
+        key === 'fallback' 
+        ? fallbackView.getAppviewLink(skeleton.uri) 
+        : typedViews[key].getAppviewLink(skeleton.uri)
+    };
     toHydrateViews[key].push(obj);
     setStore(store.length, obj);
   }

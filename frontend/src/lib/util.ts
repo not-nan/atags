@@ -21,6 +21,9 @@ export const isDid = (did: string): did is At.DID => {
 
 export type AtUriPartsFor<C extends string> = { did: At.DID, collection: C, rkey: string }
 export type AtUriParts = AtUriPartsFor<string>;
+export type ReplaceAtUriTo<T, K extends keyof T, Kto extends string | number | symbol> = 
+  Omit<T, K> & { [Property in Kto]: AtUriParts };
+export type ReplaceAtUri<T, K extends keyof T> = ReplaceAtUriTo<T, K, K>;
 
 export function atUriToParts(atUri: string): AtUriParts | undefined {
   if (!atUri.startsWith('at://')) return;

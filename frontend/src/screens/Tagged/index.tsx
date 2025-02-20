@@ -4,13 +4,14 @@ import { Accessor, createResource, createSignal, For, JSX, Match, Show, Switch, 
 import { getTagged } from "../../lib/appview";
 import { createStore } from "solid-js/store";
 import { SessionCtx } from "../../lib/auth";
-import { Loading, TagRemove } from "../../assets/icons";
+import { Loading, OpenRecord, TagRemove } from "../../assets/icons";
 import Navigation from "../../components/Navigation";
 import { addViews, TaggedViewSkeleton } from "./views";
 
 export type TaggedView = {
   skeleton: TaggedViewSkeleton,
   content: Accessor<(() => JSX.Element) | undefined>,
+  appviewUrl: string,
 }
 
 const TaggedScreen = () => {
@@ -51,32 +52,40 @@ const TaggedScreen = () => {
   return (
     <>
       <Navigation />
-      <div class="flex my-5">
+      <div class="flex my-5 px-1">
         <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink px-4 py-4">
           <Show when={!loadedTaggedPosts.length}>
             <p>No tagged records found</p>
           </Show>
           <For each={loadedTaggedPosts}>
             {(item) => (
-              <div class="flex justify-between">
-                <Switch>
-                  <Match when={item.content()}>
-                    {item.content()!()}
-                  </Match>
-                  <Match when={!item.content()}>
-                    <div class="flex grow justify-center">
-                      <Loading />
-                    </div>
-                  </Match>
-                </Switch>
-                <Show when={session.active && session.did === params.did}>
-                  <button
-                    class="cursor-pointer text-red-600 dark:text-theme-pink ml-3"
-                    onClick={() => removeTagged(item.skeleton.rkey)}>
-                    <TagRemove />
-                  </button>
-                </Show>
-              </div>)}
+              <>
+                <div class="flex justify-between">
+                  <Switch>
+                    <Match when={item.content()}>
+                      <div class="max-w-xl my-3">
+                        {item.content()!()}
+                      </div>
+                    </Match>
+                    <Match when={!item.content()}>
+                      <div class="flex grow justify-center">
+                        <Loading />
+                      </div>
+                    </Match>
+                  </Switch>
+                  <div class="flex ml-3">
+                    <A class="flex flex-col justify-center" href={item.appviewUrl} target="_blank"><OpenRecord/></A>
+                    <Show when={session.active && session.did === params.did}>
+                      <button
+                        class="cursor-pointer text-red-600 dark:text-theme-pink"
+                        onClick={() => removeTagged(item.skeleton.rkey)}>
+                        <TagRemove />
+                      </button>
+                    </Show>
+                  </div>
+                </div>
+                <hr class="text-gray-300"/>
+              </>)}
           </For>
           <Show when={loadTagged.loading}>
             <p class="text-center">Loading...</p>
