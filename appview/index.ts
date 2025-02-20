@@ -6,6 +6,9 @@ import cors from "@fastify/cors";
 import routes from './src/routes.ts';
 import { startJetstream } from './src/relay.ts';
 import { CredentialManager, XRPC } from '@atcute/client';
+import { configDotenv } from 'dotenv';
+
+configDotenv({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.dev' });
 
 export type AppContext = {
   logger: pino.Logger,

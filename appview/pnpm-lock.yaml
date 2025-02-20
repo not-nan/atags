@@ -23,6 +23,9 @@ importers:
       '@skyware/jetstream':
         specifier: ^0.2.2
         version: 0.2.2(@atcute/client@2.0.7)
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       fastify:
         specifier: ^5.2.1
         version: 5.2.1
@@ -185,6 +188,10 @@ packages:
   detect-libc@2.0.2:
     resolution: {integrity: sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==}
     engines: {node: '>=8'}
+
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
 
   event-target-shim@6.0.2:
     resolution: {integrity: sha512-8q3LsZjRezbFZ2PN+uP+Q7pnHUMmAOziU2vA2OwoFaKIXxlxl38IylhSSgUorWu/rf4er67w0ikBqjBFk/pomA==}
@@ -464,6 +471,8 @@ snapshots:
   dequal@2.0.3: {}
 
   detect-libc@2.0.2: {}
+
+  dotenv@16.4.7: {}
 
   event-target-shim@6.0.2: {}
 
