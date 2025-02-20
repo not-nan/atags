@@ -5,6 +5,7 @@ import { pino } from 'pino';
 import cors from "@fastify/cors";
 import routes from './src/routes.ts';
 import { startJetstream } from './src/relay.ts';
+import { CredentialManager, XRPC } from '@atcute/client';
 
 export type AppContext = {
   logger: pino.Logger,
@@ -12,6 +13,19 @@ export type AppContext = {
 
 async function run(): Promise<AppContext> {
   const logger = pino();
+
+  let bskyRpc: XRPC | undefined;
+  if (process.env.BSKY_POST_PROXY_DID && process.env.BSKY_POST_PROXY_PASSWORD) {
+    try {
+      const manager = new CredentialManager({ service: 'https://bsky.social' });
+      await manager.login({ identifier: process.env.BSKY_POST_PROXY_DID, password: process.env.BSKY_POST_PROXY_PASSWORD })
+      bskyRpc = new XRPC({ handler: manager });
+    } catch (err) {
+      logger.error(`Logging into bsky rpc failed ${JSON.stringify(err)}`);
+    }
+  } else {
+    logger.error('Could not log into bsky for proxy due to missing credentials');
+  }
   
   const server = fastify();
   server.register(cors, { origin: "*" });
@@ -19,13 +33,21 @@ async function run(): Promise<AppContext> {
     max: 300,
     timeWindow: "1m",
   });
-  server.register(routes);
+
+  server.register(routes, { bskyRpc });
 
   const ctx = { logger };
 
   startJetstream(ctx);
 
-  server.listen({ port: 7825 }, function (err, address) {
+  const port = 
+    (process.env.PORT
+    ? !isNaN(+process.env.PORT)
+    ? +process.env.PORT
+    : undefined
+    : undefined) ?? 7825;
+
+  server.listen({ port }, function (err, address) {
     if (err) {
       server.log.error(err);
       process.exit(1);

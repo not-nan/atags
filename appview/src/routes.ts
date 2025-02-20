@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import * as t from "tschema";
 import { userDbReadOnlyContext } from "./userDb/init.ts";
+import type { XRPC } from "@atcute/client";
 
 const GetTagsSchema = t.object({
   repo: t.string()
@@ -15,7 +16,16 @@ const GetTaggedPostsSchema = t.object({
 });
 type GetTaggedPostsI = t.Infer<typeof GetTaggedPostsSchema>;
 
-function routes(fastify: FastifyInstance, options: object) {
+const ProxyBskyGetPostsSchema = t.object({
+  uris: t.array(t.string()),
+});
+type ProxyBskyGetPostsI = t.Infer<typeof ProxyBskyGetPostsSchema>;
+
+type RoutesOptions = {
+  bskyRpc: XRPC | undefined,
+}
+
+function routes(fastify: FastifyInstance, options: RoutesOptions) {
   fastify.get<{ Querystring: GetTagsI }>(
     '/xrpc/xyz.jeroba.tags.getTags', 
     { schema: { querystring: GetTagsSchema } },
@@ -56,6 +66,23 @@ function routes(fastify: FastifyInstance, options: object) {
       : undefined;
       if (taggedPosts.length === (limit ?? 50) + 1) taggedPosts.pop();
       res.code(200).send({ taggedPosts, cursor: newCursor?.toString() });
+    }
+  );
+  
+  fastify.get<{ Querystring: ProxyBskyGetPostsI }>(
+    '/xrpc/app.bsky.feed.getPosts',
+    { schema: { querystring: ProxyBskyGetPostsSchema } },
+    async (req, res) => {
+      if (!options.bskyRpc) {
+        res.code(500).send();
+        return;
+      }
+      const result = await options.bskyRpc.get('app.bsky.feed.getPosts', {
+        params: {
+          uris: req.query.uris,
+        }
+      });
+      res.code(200).send(result.data);
     }
   );
 }
