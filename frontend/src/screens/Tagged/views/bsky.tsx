@@ -31,7 +31,7 @@ const ImageEmbed = (props: { images: AppBskyEmbedImages.ViewImage[] }) => {
     <div class="flex">
       <Switch>
         <Match when={props.images.length === 1}>
-          <Image class="rounded-md" image={props.images[0]} />
+          <Image class="h-full rounded-md" image={props.images[0]} />
         </Match>
         <Match when={props.images.length === 2}>
           <Image class="rounded-l-md mr-0.5" image={props.images[0]} />
@@ -40,18 +40,18 @@ const ImageEmbed = (props: { images: AppBskyEmbedImages.ViewImage[] }) => {
         <Match when={props.images.length === 3}>
           <Image class="rounded-l-md mr-0.5" image={props.images[0]} />
           <div class="flex flex-col ml-0.5">
-            <Image class="rounded-tr-md mb-0.5" image={props.images[1]} />
-            <Image class="rounded-br-md mt-0.5" image={props.images[2]} />
+            <Image class="h-full rounded-tr-md mb-0.5" image={props.images[1]} />
+            <Image class="h-full rounded-br-md mt-0.5" image={props.images[2]} />
           </div>
         </Match>
         <Match when={props.images.length === 4}>
           <div class="flex flex-col mr-0.5">
-            <Image class="rounded-tl-md mb-0.5" image={props.images[0]} />
-            <Image class="rounded-bl-md mt-0.5" image={props.images[1]} />
+            <Image class="h-full rounded-tl-md mb-0.5" image={props.images[0]} />
+            <Image class="h-full rounded-bl-md mt-0.5" image={props.images[1]} />
           </div>
           <div class="flex flex-col ml-0.5">
-            <Image class="rounded-tr-md mb-0.5" image={props.images[2]} />
-            <Image class="rounded-br-md mt-0.5" image={props.images[3]} />
+            <Image class="h-full rounded-tr-md mb-0.5" image={props.images[2]} />
+            <Image class="h-full rounded-br-md mt-0.5" image={props.images[3]} />
           </div>
         </Match>
       </Switch>
@@ -60,7 +60,7 @@ const ImageEmbed = (props: { images: AppBskyEmbedImages.ViewImage[] }) => {
 }
 
 const Image = (props: { image: AppBskyEmbedImages.ViewImage, class?: string }) => {
-  return <img class={`w-full h-full border border-gray-300 dark:border-darkish-pink object-cover ${props.class ?? ''}`} src={props.image.fullsize} alt={props.image.alt} />
+  return <img class={`w-full border border-gray-300 dark:border-darkish-pink object-cover ${props.class ?? ''}`} src={props.image.fullsize} alt={props.image.alt} />
 }
 
 
