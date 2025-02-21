@@ -3,7 +3,6 @@ import { AtUriParts, atUriToParts, partsToAtUri, ReplaceAtUri } from "../../../l
 import NotFound from "./NotFound";
 import { AppBskyEmbedImages, AppBskyFeedDefs, AppBskyFeedPost } from "@atcute/client/lexicons";
 import { Match, Switch } from "solid-js";
-import { Session } from "../../../lib/auth";
 import { simpleFetchHandler, XRPC } from "@atcute/client";
 
 const Render = (props: { post: ReplaceAtUri<AppBskyFeedDefs.PostView, 'uri'> }) => {
@@ -67,13 +66,14 @@ const Image = (props: { image: AppBskyEmbedImages.ViewImage, class?: string }) =
 
 const bskyRpc = new XRPC({ handler: simpleFetchHandler({ service: 'https://api.bsky.app'  }) });
 
-const hydrate = async (views: ToHydrateView[], session: Session) => {
+const hydrate = async (views: ToHydrateView[]) => {
   const chunkSize = 25;
   for (let startOfChunk = 0, chunk = views.slice(0, chunkSize); chunk.length; startOfChunk += chunkSize, chunk = views.slice(startOfChunk, startOfChunk+chunkSize)) {
     const uris = chunk.map(v => partsToAtUri(v.skeleton.uri));
     const posts = 
-    (await (session.active ? (session.rpc) : (bskyRpc))
-      .get('app.bsky.feed.getPosts', {params: { uris }})).data.posts 
+      (await bskyRpc
+      .get('app.bsky.feed.getPosts', {params: { uris }}))
+      .data.posts 
       .map(post => ({
         ...post,
         uri: atUriToParts(post.uri)!,
