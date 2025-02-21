@@ -37,7 +37,7 @@ async function run(): Promise<AppContext> {
     timeWindow: "1m",
   });
 
-  server.register(routes, { bskyManager });
+  server.register(routes, { bskyManager, logger });
 
   const ctx = { logger };
 
