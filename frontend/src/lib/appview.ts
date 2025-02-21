@@ -33,11 +33,3 @@ export async function getTagged(did: At.DID, tagRkey: string, cursor?: string)
   })).data;
   return { taggedPosts: res.taggedPosts.map(t => ({ ...t, uri: atUriToParts(t.record)! })), cursor: res.cursor };
 }
-
-export async function getBskyPosts(uris: string[]) {
-  return (await rpc.get('app.bsky.feed.getPosts', {
-    params: {
-      uris
-    }
-  })).data.posts;
-}
