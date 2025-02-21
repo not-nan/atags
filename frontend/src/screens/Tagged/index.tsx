@@ -75,15 +75,15 @@ const TaggedScreen = () => {
               </div>
             </div>
           </Show>
-          <Show when={!loadTagged.loading && !loadedTaggedPosts.length}>
-            <p>No tagged records found</p>
-          </Show>
           <Show when={session.active && session.did === params.did}>
             <ApplyTag 
               tagRkey={params.tag} 
               session={sessionAssertActive(session)} 
               registerNewTag={registerNewTag} 
             />
+          </Show>
+          <Show when={!loadTagged.loading && !loadedTaggedPosts.length}>
+            <p class="text-center my-5">No tagged records found</p>
           </Show>
           <hr class="text-gray-300 dark:text-darkish-pink" />
           <For each={loadedTaggedPosts}>
