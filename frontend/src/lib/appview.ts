@@ -33,3 +33,12 @@ export async function getTagged(did: At.DID, tagRkey: string, cursor?: string)
   })).data;
   return { taggedPosts: res.taggedPosts.map(t => ({ ...t, uri: atUriToParts(t.record)! })), cursor: res.cursor };
 }
+
+export async function getTag(did: At.DID, tag: string) {
+  return (await rpc.get('xyz.jeroba.tags.getTag', {
+    params: {
+      repo: did,
+      tag,
+    }
+  })).data.tag;
+}

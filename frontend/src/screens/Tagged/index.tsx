@@ -1,7 +1,7 @@
 import { At } from "@atcute/client/lexicons";
 import { A, useParams } from "@solidjs/router";
 import { Accessor, createResource, createSignal, For, JSX, Match, Show, Switch, useContext } from "solid-js";
-import { getTagged } from "../../lib/appview";
+import { getTag, getTagged } from "../../lib/appview";
 import { createStore } from "solid-js/store";
 import { ActiveSession, sessionAssertActive, SessionCtx } from "../../lib/auth";
 import { Loading, OpenRecord, TagRemove } from "../../assets/icons";
@@ -23,6 +23,10 @@ const TaggedScreen = () => {
   const [newCursor, setNewCursor] = createSignal<string | undefined>();
   const [cursor, setCursor] = createSignal<string | undefined>();
   const [loadedTaggedPosts, setLoadedTaggedPosts] = createStore<TaggedView[]>([]);
+  const [tag] = createResource(
+    () => ({ did: params.did as At.DID, tag: params.tag }),
+    ({ did, tag }) => getTag(did, tag)
+  );
 
   const [loadTagged] = createResource(
     () => ({ did: params.did as At.DID, tag: params.tag, cursor: cursor() }),
@@ -63,9 +67,14 @@ const TaggedScreen = () => {
       <Navigation />
       <div class="flex my-5 px-1">
         <div class="mx-auto shrink rounded-xl border border-gray-400 dark:border-theme-pink px-4 py-4">
-          <div>
-            <p></p>
-          </div>
+          <Show when={tag()}>
+            <div class="mb-5">
+              <p class="text-center text-xl font-bold">{ tag()?.title }</p>
+              <div class="flex justify-center mt-1">
+                <p class="text-sm max-w-sm break-words">{ tag()?.description }</p>
+              </div>
+            </div>
+          </Show>
           <Show when={!loadTagged.loading && !loadedTaggedPosts.length}>
             <p>No tagged records found</p>
           </Show>
