@@ -8,6 +8,12 @@ const GetTagsSchema = t.object({
 });
 type GetTagsI = t.Infer<typeof GetTagsSchema>;
 
+const GetTagSchema = t.object({
+  repo: t.string(),
+  tag: t.string(),
+});
+type GetTagI = t.Infer<typeof GetTagSchema>;
+
 const GetTaggedPostsSchema = t.object({
   repo: t.string(),
   tag: t.string(),
@@ -35,6 +41,25 @@ function routes(fastify: FastifyInstance, options: RoutesOptions) {
       res.code(200).send({ tags });
     }
   );
+
+  fastify.get<{ Querystring: GetTagI }>(
+    '/xrpc/xyz.jeroba.tags.getTag',
+    { schema: { querystring: GetTagSchema } },
+    async (req, res) => {
+      const { repo, tag } = req.query;
+      const tagResult = await userDbReadOnlyContext(repo,
+        async (db) => db
+          .selectFrom('tags')
+          .select(['rkey', 'title', 'description'])
+          .where('rkey', '=', tag)
+          .executeTakeFirst())
+      if (tagResult) {
+        res.code(200).send({ tag: tagResult });
+      } else {
+        res.code(400).send({ error: 'UnknownTag', message: 'Tag not found' });
+      }
+    }
+  )
 
   fastify.get<{ Querystring: GetTaggedPostsI }>(
     '/xrpc/xyz.jeroba.tags.getTaggedPosts',

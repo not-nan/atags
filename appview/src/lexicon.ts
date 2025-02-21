@@ -4,6 +4,21 @@
 import "@atcute/client/lexicons";
 
 declare module "@atcute/client/lexicons" {
+  /** Get tag for a repo */
+  namespace XyzJerobaTagsGetTag {
+    interface Params {
+      repo: At.DID;
+      tag: string;
+    }
+    type Input = undefined;
+    interface Output {
+      tag: XyzJerobaTagsGetTags.TagsView;
+    }
+    interface Errors {
+      UnknownTag: {};
+    }
+  }
+
   /** Get tagged posts for a tag in a repo */
   namespace XyzJerobaTagsGetTaggedPosts {
     interface Params {
@@ -89,6 +104,10 @@ declare module "@atcute/client/lexicons" {
   }
 
   interface Queries {
+    "xyz.jeroba.tags.getTag": {
+      params: XyzJerobaTagsGetTag.Params;
+      output: XyzJerobaTagsGetTag.Output;
+    };
     "xyz.jeroba.tags.getTaggedPosts": {
       params: XyzJerobaTagsGetTaggedPosts.Params;
       output: XyzJerobaTagsGetTaggedPosts.Output;

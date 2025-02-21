@@ -1,0 +1,43 @@
+{
+  "lexicon": 1,
+  "id": "xyz.jeroba.tags.getTag",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Get tag for a repo",
+      "parameters": {
+        "type": "params",
+        "required": [
+          "repo",
+          "tag"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string",
+            "format": "did"
+          },
+          "tag": {
+            "type": "string",
+            "format": "tid"
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "tag"
+          ],
+          "properties": {
+            "tag": {
+              "type": "ref",
+              "ref": "xyz.jeroba.tags.getTags#tagsView"
+            }
+          }
+        }
+      },
+      "errors": [{ "name": "UnknownTag" }]
+    }
+  }
+}
