@@ -1,6 +1,7 @@
 import { createEffect, createSignal, Match, Show, Switch, useContext } from "solid-js";
 import { AuthTypes, SessionCtx } from "../lib/auth";
 import { useNavigate } from "@solidjs/router";
+import { setSidebarState } from "../components/Navigation";
 
 const LoginScreen = () => {
   const session = useContext(SessionCtx);
@@ -13,7 +14,8 @@ const LoginScreen = () => {
 
   createEffect(() => {
     if (session.active) {
-      navigate(`/${session.did}/tag`, { replace: true });
+      setSidebarState('expanded');
+      navigate(`/create-board`, { replace: true });
     }
   });
 
@@ -22,7 +24,8 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       const { did } = await session.login({ type, didOrHandle, password });
-      navigate(`/${did}/tag`, { replace: true });
+      setSidebarState('expanded');
+      navigate(`/create-board`, { replace: true });
     } catch (err: any) {
       console.error(err);
       setError(err.message ?? JSON.stringify(err));

@@ -12,8 +12,8 @@ const Render = (props: { post: ReplaceAtUri<AppBskyFeedDefs.PostView, 'uri'> }) 
       <div class="flex h-11">
        <img class="rounded-full aspect-square h-11 w-11" src={ props.post.author.avatar } />
         <div class="flex flex-col shrink ml-2">
-          <p class="text-base">{ props.post.author.displayName }</p>
-          <p class="text-gray-700 text-sm">@{ props.post.author.handle }</p>
+          <p class="text-base dark:text-light-pink">{ props.post.author.displayName }</p>
+          <p class="text-gray-500 text-sm">@{ props.post.author.handle }</p>
         </div>
       </div>
       <p class="my-2">{record.text}</p>

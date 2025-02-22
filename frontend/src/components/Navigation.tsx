@@ -1,60 +1,39 @@
-import { Match, Switch, useContext } from "solid-js";
-import { sessionAssertActive, SessionCtx } from "../lib/auth";
-import { useNavigate } from "@solidjs/router";
-import { User } from "../assets/icons";
+import { createSignal, JSX, Show } from "solid-js";
+import Sidebar, { SidebarSelectedType } from "./Sidebar";
+import { LeftPanelClose, LeftPanelOpen } from "../assets/icons";
 
-type SelectableOptions = 'tags' | 'tag-records' | 'bskyfeeds' | 'account'
+export const sidebarIconSize = 42;
 
-const Navigation = (props: { selected?: SelectableOptions }) => {
-  const session = useContext(SessionCtx);
-  const navigate = useNavigate();
-  const activeSession = () => sessionAssertActive(session);
-  const selectedClassList = (condition: boolean) => ({
-    'font-bold': condition,
-    'bg-gray-100': condition,
-    'dark:bg-darkish-pink': condition,
-  });
+export const [sidebarState, setSidebarState] = createSignal<'expanded' | 'collapsed'>('expanded');
+const sidebarStateInverted = () => sidebarState() === 'expanded' ? 'collapsed' : 'expanded';
 
+export type NavigationProps = { 
+  children: JSX.Element, 
+  selected?: SidebarSelectedType, 
+  selectedValue?: string,
+  topbar?: JSX.Element,
+}
+const Navigation = (props: NavigationProps) => {
   return (
-    <div class="mx-auto flex justify-center my-4">
-      <div class="shrink flex justify-center rounded-xl border border-gray-400 dark:border-theme-pink divide-x divide-solid divide-gray-400">
-        <Switch>
-          <Match when={session.active}>
-            <button
-              classList={selectedClassList(props.selected === 'tags')}
-              class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-darkish-pink rounded-l-xl"
-              onClick={() => navigate(`/${activeSession().did}/tag`)}>
-              Tag Categories
-            </button>
-            <button
-              classList={selectedClassList(props.selected === 'tag-records')}
-              class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-darkish-pink"
-              onClick={() => navigate('/tag-records')}>
-              Apply Tags
-            </button>
-            {/* 
-          <button 
-            classList={selectedClassList(props.selected === 'bskyfeeds')} 
-            class="p-2 hover:bg-gray-100">
-              Bluesky Feeds
+    <div class="flex lg:justify-center max-h-dvh">
+      <Sidebar sidebarState={sidebarState()} setSidebarState={setSidebarState} selected={props.selected} selectedValue={props.selectedValue} />
+      <div class="grow shrink lg:max-w-2xl xl:max-w-3xl mx-1 max-sm:data-[state=collapsed]:hidden overflow-clip" data-state={sidebarStateInverted()}>
+        <div class="flex justify-between pl-2 my-1">
+          <button class="cursor-pointer dark:text-theme-pink" onClick={() => setSidebarState(sidebarStateInverted())}>
+            <Show when={sidebarState() === 'expanded'} fallback={<LeftPanelOpen width={sidebarIconSize} height={sidebarIconSize} />}>
+              <LeftPanelClose width={sidebarIconSize} height={sidebarIconSize} />
+            </Show>
           </button>
-          */}
-            <div
-              classList={selectedClassList(props.selected === 'account')}
-              class="flex flex-col justify-center cursor-pointer dark:hover:bg-darkish-pink rounded-r-xl px-1"
-              onClick={() => navigate('/account')}>
-              <User />
-            </div>
-          </Match>
-          <Match when={!session.active}>
-            <button
-              class="p-2 hover:bg-gray-100 cursor-pointer dark:hover:bg-darkish-pink rounded-xl font-bold"
-              onClick={() => navigate(`/`)}>
-              Go to login
-            </button>
-          </Match>
-        </Switch>
+          <div class="flex">
+            { props.topbar ?? <></> }
+          </div>
+        </div>
+        <div class="overflow-scroll h-full">
+          { props.children }
+          <div class="h-16" />
+        </div>
       </div>
+      <div class="lg:grow lg:shrink lg:basis-0 data-[state=collapsed]:hidden" data-state={sidebarState()}/>
     </div>
   );
 }

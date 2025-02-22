@@ -1,17 +1,17 @@
 import { Route, Router } from "@solidjs/router";
 import LoginScreen from "./screens/Login";
 import { ActiveSession, LoginOptions, Session, SessionCtx } from "./lib/auth";
-import TagsScreen from "./screens/Tags";
-import TaggedScreen from "./screens/Tagged";
+import BoardScreen from "./screens/Board";
 import { resolveDid, resolveHandle } from "./lib/resolution";
 import { isDid, wait } from "./lib/util";
 import { getPdsEndpoint } from "@atcute/client/utils/did";
 import { AtpSessionData, CredentialManager, XRPC } from "@atcute/client";
 import { At } from "@atcute/client/lexicons";
 import { createStore } from "solid-js/store";
-import AddTagged from "./screens/AddTagged";
 import Account from "./screens/Account";
 import { createAuthorizationUrl, deleteStoredSession, finalizeAuthorization, getSession, OAuthUserAgent, resolveFromService } from "@atcute/oauth-browser-client";
+import CreateBoard from "./screens/CreateBoard";
+import NotFound from "./screens/NotFound";
 
 function isAtpSessionData(o: any): o is AtpSessionData {
   return o.refreshJwt && o.accessJwt && o.handle && o.did;
@@ -48,6 +48,7 @@ function App() {
           did: autoLoginInfo.did,
           rpc,
           logout,
+          loginInProcess: false,
         });
         successful = true;
         return true;
@@ -62,6 +63,7 @@ function App() {
           did: session.info.sub, 
           rpc: new XRPC({ handler: agent }), 
           logout,
+          loginInProcess: false,
         })
         successful = true;
         return true;
@@ -103,7 +105,8 @@ function App() {
         type: 'oauth',
         did,
         rpc: new XRPC({ handler: agent }),
-        logout
+        logout,
+        loginInProcess: false,
       });
       return true;
     } catch (err) {
@@ -131,7 +134,7 @@ function App() {
         did,
         rpc,
         logout,
-        isDreary: () => did === 'did:plc:hx53snho72xoj7zqt5uice4u'
+        loginInProcess: false,
       });
 
       localStorage.setItem('autoLogin', JSON.stringify({
@@ -195,7 +198,6 @@ function App() {
     active: false,
     login,
     loginInProcess: true,
-    isDreary: () => false,
   });
 
   (async () => {
@@ -208,10 +210,10 @@ function App() {
     <SessionCtx.Provider value={session}>
       <Router>
         <Route path="/" component={LoginScreen} />
-        <Route path="/:did/tag" component={TagsScreen} />
-        <Route path="/:did/tag/:tag" component={TaggedScreen} />
-        <Route path="/tag-records" component={AddTagged} />
+        <Route path="/create-board" component={CreateBoard} />
+        <Route path="/profile/:did/board/:tag" component={BoardScreen} />
         <Route path="/account" component={Account} />
+        <Route path="*" component={NotFound} />
       </Router>
     </SessionCtx.Provider>
   )

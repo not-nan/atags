@@ -1,4 +1,4 @@
-export type Size = { width: string, height: string }
+export type Size = { width: number | string, height: number | string }
 
 export const Add = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm1 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg>
 
@@ -24,3 +24,17 @@ export const Loading = () =>
   </div>
 
 export const OpenRecord = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h14v-7h2v7q0 .825-.587 1.413T19 21zm4.7-5.3l-1.4-1.4L17.6 5H14V3h7v7h-2V6.4z"/></svg>
+
+export const ChevronLeft = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="m14 18l-6-6l6-6l1.4 1.4l-4.6 4.6l4.6 4.6z"/></svg>
+
+export const ChevronDown = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="m12 15.4l-6-6L7.4 8l4.6 4.6L16.6 8L18 9.4z"/></svg>
+
+export const ChevronRight = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z"/></svg>
+
+export const RightPanelOpen = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M11.5 16V8l-4 4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm11-2h3V5h-3zm-2 0V5H5v14zm2 0h3z"/></svg>
+
+export const RightPanelClose = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M7.5 8v8l4-4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm11-2h3V5h-3zm-2 0V5H5v14zm2 0h3z"/></svg>
+
+export const LeftPanelOpen = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M12.5 8v8l4-4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm3-2V5H5v14zm2 0h9V5h-9zm-2 0H5z"/></svg>
+
+export const LeftPanelClose = (props: Partial<Size>) => <svg xmlns="http://www.w3.org/2000/svg" width={props.width ?? "32"} height={props.height ?? "32"} viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 16V8l-4 4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm3-2V5H5v14zm2 0h9V5h-9zm-2 0H5z"/></svg>

@@ -1,7 +1,7 @@
 import { Match, Switch, useContext } from "solid-js";
-import Navigation from "../components/Navigation"
 import { SessionCtx } from "../lib/auth";
 import { useNavigate } from "@solidjs/router";
+import Navigation from "../components/Navigation";
 
 const Account = () => {
   const session = useContext(SessionCtx);
@@ -12,8 +12,7 @@ const Account = () => {
     navigate('/');
   }
   return (
-    <>
-      <Navigation selected="account" />
+    <Navigation selected="account">
       <Switch>
         <Match when={session.active}>
           <div class="flex my-5">
@@ -36,7 +35,7 @@ const Account = () => {
           </div>
         </Match>
       </Switch>
-    </>
+    </Navigation>
   )
 }
 
