@@ -23,7 +23,7 @@ const LoginScreen = () => {
     if (session.active) return;
     setLoading(true);
     try {
-      const { did } = await session.login({ type, didOrHandle, password });
+      await session.login({ type, didOrHandle, password });
       setSidebarState('expanded');
       navigate(`/create-board`, { replace: true });
     } catch (err: any) {

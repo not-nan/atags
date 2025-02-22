@@ -1,6 +1,6 @@
 import { At, ComAtprotoRepoApplyWrites } from "@atcute/client/lexicons";
 import { A, useNavigate, useParams } from "@solidjs/router";
-import { Accessor, createResource, createSignal, For, JSX, Match, on, Show, Switch, useContext } from "solid-js";
+import { Accessor, createResource, createSignal, For, JSX, Match, Show, Switch, useContext } from "solid-js";
 import { getTag, getTagged } from "../../lib/appview";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { ActiveSession, sessionAssertActive, SessionCtx } from "../../lib/auth";
