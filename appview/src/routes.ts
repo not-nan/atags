@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import * as t from "tschema";
 import { userDbReadOnlyContext } from "./userDb/init.ts";
 import type { Logger } from "pino";
+import { sql } from "kysely";
 
 const GetTagsSchema = t.object({
   repo: t.string()
@@ -35,7 +36,7 @@ function routes(fastify: FastifyInstance, options: RoutesOptions) {
       const tags = await userDbReadOnlyContext(repo,
         async (db) => db
           .selectFrom('tags')
-          .orderBy('title asc')
+          .orderBy(sql`title collate nocase asc`)
           .select(['rkey', 'title', 'description'])
           .execute()) ?? [];
       res.code(200).send({ tags });
