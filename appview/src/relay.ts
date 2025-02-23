@@ -4,7 +4,7 @@ import { userDbContext } from "./userDb/init.ts";
 import { countGrapheme } from 'unicode-segmenter';
 import fs from "node:fs";
 import * as TID from '@atcute/tid';
-import { atUriToParts, partsToAtUri, type AtUriParts } from "./util.ts";
+import { atUriToParts, isDid, partsToAtUri, type AtUriParts } from "./util.ts";
 
 export function startJetstream(ctx: AppContext) {
   let intervalID: NodeJS.Timeout;
@@ -103,6 +103,7 @@ export function startJetstream(ctx: AppContext) {
       if (event.commit.record.record) { 
         atUriParts = atUriToParts(event.commit.record.record);
         if (!atUriParts) return;
+        if (!isDid(atUriParts.did)) return;
       }
     }
     try {
@@ -127,8 +128,9 @@ export function startJetstream(ctx: AppContext) {
                 rkey: event.commit.rkey,
                 cid: event.commit.cid,
                 tag: event.commit.record.tag,
-                // This closure is ran immediately when the userDbContext is called, this should never be undefined
-                record: partsToAtUri(atUriParts),
+                recordDid: atUriParts.did,
+                recordCollection: atUriParts.collection,
+                recordRkey: atUriParts.rkey,
                 updatedAt: Date.now(),
                 indexedAt: Date.now(),
               })

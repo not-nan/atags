@@ -3,6 +3,8 @@ import * as t from "tschema";
 import { userDbReadOnlyContext } from "./userDb/init.ts";
 import type { Logger } from "pino";
 import { sql } from "kysely";
+import { partsToAtUri } from "./util.ts";
+import type { At } from "@atcute/client/lexicons";
 
 const GetTagsSchema = t.object({
   repo: t.string()
@@ -78,7 +80,7 @@ function routes(fastify: FastifyInstance, options: RoutesOptions) {
           return query
             .orderBy('indexedAt desc')
             .limit((limit ?? 50) + 1)
-            .select(['rkey', 'cid', 'record', 'indexedAt'])
+            .select(['rkey', 'cid', 'recordDid', 'recordCollection', 'recordRkey', 'indexedAt'])
             .execute();
         }
       ) ?? [];
@@ -86,7 +88,19 @@ function routes(fastify: FastifyInstance, options: RoutesOptions) {
         ? taggedPosts[taggedPosts.length - 2].indexedAt
         : undefined;
       if (taggedPosts.length === (limit ?? 50) + 1) taggedPosts.pop();
-      res.code(200).send({ taggedPosts, cursor: newCursor?.toString() });
+      res.code(200).send({ 
+        taggedPosts: taggedPosts.map(taggedPost => ({
+          rkey: taggedPost.rkey,
+          cid: taggedPost.cid,
+          indexedAt: taggedPost.indexedAt,
+          record: partsToAtUri({ 
+            did: taggedPost.recordDid as At.DID, 
+            collection: taggedPost.recordCollection, 
+            rkey: taggedPost.recordRkey, 
+          }),
+        })), 
+        cursor: newCursor?.toString() 
+      });
     }
   );
 }

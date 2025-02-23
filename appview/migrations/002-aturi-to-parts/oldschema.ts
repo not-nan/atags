@@ -19,9 +19,7 @@ export type TaggedRecordTable = {
   rkey: ColumnType<string, string, never>,
   cid: string,
   tag: string,
-  recordDid: ColumnType<string, string, never>,
-  recordCollection: ColumnType<string, string, never>,
-  recordRkey: ColumnType<string, string, never>,
+  record: ColumnType<string, string, never>,
   updatedAt: number,
   indexedAt: ColumnType<number, number, never>,
 }
@@ -51,9 +49,7 @@ migrations['001'] = {
       .addColumn('rkey', 'text', (col) => col.notNull().primaryKey())
       .addColumn('cid', 'text', (col) => col.notNull())
       .addColumn('tag', 'text', (col) => col.notNull().references('tags.rkey').onDelete('cascade'))
-      .addColumn('recordDid', 'text', (col) => col.notNull())
-      .addColumn('recordCollection', 'text', (col) => col.notNull())
-      .addColumn('recordRkey', 'text', (col) => col.notNull())
+      .addColumn('record', 'text', (col) => col.notNull())
       .addColumn('updatedAt', 'date', (col) => col.notNull())
       .addColumn('indexedAt', 'date', (col) => col.notNull())
       .execute();
@@ -81,7 +77,7 @@ migrations['001'] = {
 export const createUserDb = (did: string, options?: SqliteDb.Options): UserDatabase => {
   const db = new Kysely<UserDatabaseSchema>({
     dialect: new SqliteDialect({
-      database: new SqliteDb(`dbs/${did}.db`, options),
+      database: new SqliteDb(`dbs/${did}`, options),
     }),
   });
   //db.executeQuery(CompiledQuery.raw('PRAGMA journal_mode = WAL'));

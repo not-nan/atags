@@ -1,0 +1,3 @@
+## Reasoning
+
+Since we run multiple databases, and are constantly brining new ones up, executing every migration every time we need to bring a new one up is going to add up in terms of cost, especially if we start accumulating migrations. The aturi -> parts migration will be a bit complex too, and will be easier to execute with separate databases. I think it's for the best even if we're sidestepping kysely's migration system.

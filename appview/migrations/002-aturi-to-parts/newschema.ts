@@ -78,10 +78,10 @@ migrations['001'] = {
   }
 }
 
-export const createUserDb = (did: string, options?: SqliteDb.Options): UserDatabase => {
+export const createUserDb = (did: string, options?: SqliteDb.Options): NewUserDatabase => {
   const db = new Kysely<UserDatabaseSchema>({
     dialect: new SqliteDialect({
-      database: new SqliteDb(`dbs/${did}.db`, options),
+      database: new SqliteDb(`new-dbs/${did}`, options),
     }),
   });
   //db.executeQuery(CompiledQuery.raw('PRAGMA journal_mode = WAL'));
@@ -89,13 +89,13 @@ export const createUserDb = (did: string, options?: SqliteDb.Options): UserDatab
   return db;
 };
 
-export const migrateToLatest = async (db: UserDatabase) => {
+export const migrateToLatest = async (db: NewUserDatabase) => {
   const migrator = new Migrator({ db, provider: migrationProvider });
   const { error } = await migrator.migrateToLatest();
   if (error) throw error;
 };
 
-export async function userDbContext<T>(did:string, action: (db: UserDatabase) => Promise<T>): Promise<T> {
+export async function userDbContext<T>(did:string, action: (db: NewUserDatabase) => Promise<T>): Promise<T> {
   const db = createUserDb(did);
   await migrateToLatest(db);
   const res = await action(db);
@@ -103,8 +103,8 @@ export async function userDbContext<T>(did:string, action: (db: UserDatabase) =>
   return res;
 }
 
-export async function userDbReadOnlyContext<T>(did:string, action: (db: UserDatabase) => Promise<T>): Promise<T | null> {
-  let db: UserDatabase;
+export async function userDbReadOnlyContext<T>(did:string, action: (db: NewUserDatabase) => Promise<T>): Promise<T | null> {
+  let db: NewUserDatabase;
   try {
     db = createUserDb(did, { fileMustExist: true, readonly: true });
   } catch {
@@ -116,4 +116,4 @@ export async function userDbReadOnlyContext<T>(did:string, action: (db: UserData
   return res;
 }
 
-export type UserDatabase = Kysely<UserDatabaseSchema>;
+export type NewUserDatabase = Kysely<UserDatabaseSchema>;
