@@ -93,7 +93,7 @@ const Sidebar = (props: SidebarProps) => {
               <Switch>
                 {/* TODO: Show error */}
                 <Match when={tags()}>
-                  <div class="flex flex-col sm:w-fit mt-2 divide-y divide-gray-300 border border-gray-300 dark:divide-theme-pink dark:border-theme-pink">
+                  <div class="flex flex-col sm:w-fit mt-2 divide-y divide-gray-300 border border-solid border-gray-300 dark:divide-theme-pink dark:border-theme-pink">
                     <For each={tags()}>
                       {(item) => (
                         <A

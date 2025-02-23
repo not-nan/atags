@@ -73,7 +73,7 @@ const CreateBoard = () => {
             <input
               required
               id="titleInput"
-              class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+              class="rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
               disabled={loading()}
               onInput={(e) => setTitleInput(e.currentTarget.value)}
             />
@@ -81,7 +81,7 @@ const CreateBoard = () => {
             <textarea
               rows={6}
               id="descriptionInput"
-              class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+              class="rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
               disabled={loading()}
               onInput={(e) => setDescriptionInput(e.currentTarget.value)}
             />
@@ -91,7 +91,7 @@ const CreateBoard = () => {
           </Show>
           <div class="flex justify-center mt-2">
             <button
-              class="cursor-pointer text-lg mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+              class="cursor-pointer text-lg mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
               disabled={loading()}
               onClick={() => createTag(titleInput(), descriptionInput())}
             >

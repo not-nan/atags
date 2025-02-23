@@ -40,9 +40,9 @@ const LoginScreen = () => {
     <div class="flex justify-center">
       <div>
         <p class="text-2xl text-center font-semibold mt-3">📌 Boards</p>
-        <div class="shrink rounded-xl border border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
+        <div class="shrink rounded-xl border border-solid border-gray-400 dark:border-theme-pink px-2 py-4 my-5">
           <select
-            class="block mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink p-2 mb-2"
+            class="block mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink p-2 mb-2"
             onChange={(e) => setAuthType(e.target.value as 'oauth' | 'password')}>
             <option value="oauth">OAuth</option>
             <option value="password">App Password</option>
@@ -51,7 +51,7 @@ const LoginScreen = () => {
             <label class="px-2 py-1 my-1">Handle or did</label>
             <input
               id="didOrHandle"
-              class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+              class="rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
               disabled={loading()}
               onKeyDown={(ev) =>
                 ev.key === 'Enter'
@@ -67,7 +67,7 @@ const LoginScreen = () => {
                 id="password"
                 type="password"
                 ref={passwordInputElement}
-                class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+                class="rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
                 disabled={loading()}
                 onKeyDown={(ev) => ev.key === 'Enter' ? login() : undefined}
                 onInput={(e) => setPasswordInput(e.currentTarget.value)}
@@ -80,7 +80,7 @@ const LoginScreen = () => {
           <div class="flex justify-center mt-2">
             <button
               disabled={loading()}
-              class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+              class="cursor-pointer mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
               onClick={() => login()}>
               <Switch>
                 <Match when={loading()}>

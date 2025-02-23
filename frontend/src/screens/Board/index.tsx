@@ -394,7 +394,7 @@ const ApplyTag = (props: ApplyTagProps) => {
           id="atUriInput"
           disabled={loading()}
           value={atUriInput()}
-          class="rounded-lg grow border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
+          class="rounded-lg grow border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
           onKeyDown={(ev) => ev.key === 'Enter' ? tagRecord(props.tagRkey, atUriInput()) : undefined }
           onInput={(e) => setAtUriInput(e.currentTarget.value)}/>
       </div>
@@ -404,7 +404,7 @@ const ApplyTag = (props: ApplyTagProps) => {
       <div class="flex justify-center mt-4">
         <button
           disabled={loading()}
-          class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+          class="cursor-pointer mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
           onClick={() => tagRecord(props.tagRkey, atUriInput())}
         >
           <Switch>
@@ -434,7 +434,7 @@ const EditTag = (props: EditTagProps) => {
         disabled={props.state.loading}
         onInput={(e) => props.setState({ title: e.target.value })}
         value={props.state.title}
-        class="text-xl font-bold text-center rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 mx-3 focus:dark:border-light-pink dark:focus:outline-none"
+        class="text-xl font-bold text-center rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 mx-3 focus:dark:border-light-pink dark:focus:outline-none"
       />
       <div class="flex justify-center mt-1">
         <textarea
@@ -442,7 +442,7 @@ const EditTag = (props: EditTagProps) => {
           onInput={(e) => props.setState({ description: e.target.value })}
           value={props.state.description}
           rows={6}
-          class="text-sm grow text-center max-w-sm rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 mx-3 focus:dark:border-light-pink dark:focus:outline-none"
+          class="text-sm grow text-center max-w-sm rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 mx-3 focus:dark:border-light-pink dark:focus:outline-none"
         />
       </div>
       <Show when={props.state.error}>

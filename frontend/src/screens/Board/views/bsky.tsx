@@ -60,7 +60,7 @@ const ImageEmbed = (props: { images: AppBskyEmbedImages.ViewImage[] }) => {
 }
 
 const Image = (props: { image: AppBskyEmbedImages.ViewImage, class?: string }) => {
-  return <img class={`w-full border border-gray-300 dark:border-darkish-pink object-cover ${props.class ?? ''}`} src={props.image.fullsize} alt={props.image.alt} />
+  return <img class={`w-full border border-solid border-gray-300 dark:border-darkish-pink object-cover ${props.class ?? ''}`} src={props.image.fullsize} alt={props.image.alt} />
 }
 
 
