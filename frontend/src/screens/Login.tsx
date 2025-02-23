@@ -11,6 +11,7 @@ const LoginScreen = () => {
   const [passwordInput, setPasswordInput] = createSignal('');
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | undefined>();
+  let passwordInputElement: HTMLInputElement | undefined;
 
   createEffect(() => {
     if (session.active) {
@@ -19,11 +20,11 @@ const LoginScreen = () => {
     }
   });
 
-  const login = async (type:AuthTypes, didOrHandle: string, password: string) => {
+  const login = async () => {
     if (session.active) return;
     setLoading(true);
     try {
-      await session.login({ type, didOrHandle, password });
+      await session.login({ type: authType(), didOrHandle: didInput(), password: passwordInput() });
       setSidebarState('expanded');
       navigate(`/create-board`, { replace: true });
     } catch (err: any) {
@@ -50,6 +51,10 @@ const LoginScreen = () => {
             id="didOrHandle"
             class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
             disabled={loading()}
+            onKeyDown={(ev) => 
+              ev.key === 'Enter' 
+              ? (authType() === 'password' ? passwordInputElement?.focus() : login())
+              : undefined}
             onInput={(e) => setDidInput(e.currentTarget.value)}
           />
         </div>
@@ -59,8 +64,10 @@ const LoginScreen = () => {
             <input
               id="password"
               type="password"
+              ref={passwordInputElement}
               class="rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
               disabled={loading()}
+              onKeyDown={(ev) => ev.key === 'Enter' ? login() : undefined}
               onInput={(e) => setPasswordInput(e.currentTarget.value)}
             />
           </div>
@@ -72,7 +79,7 @@ const LoginScreen = () => {
           <button
             disabled={loading()}
             class="cursor-pointer mx-auto rounded-lg border disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
-            onClick={() => login(authType(), didInput(), passwordInput())}>
+            onClick={() => login()}>
             <Switch>
               <Match when={loading()}>
                 Loading...
