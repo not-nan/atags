@@ -2,7 +2,7 @@
   "client_id": "https://pinboards.jeroba.xyz/client-metadata.json",
   "client_name": "pdsls",
   "client_uri": "https://pinboards.jeroba.xyz",
-  "redirect_uris": ["https://pinboards.jeroba.xyz/"],
+  "redirect_uris": ["https://atags.jeroba.xyz", "https://pinboards.jeroba.xyz/"],
   "scope": "atproto transition:generic",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],
