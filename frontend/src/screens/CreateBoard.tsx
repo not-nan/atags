@@ -5,6 +5,7 @@ import { atUriToParts, wait } from "../lib/util";
 import { mutateTags } from "../components/Sidebar";
 import { useNavigate } from "@solidjs/router";
 import { Loading } from "../assets/icons";
+import Button from "../components/Button";
 
 const CreateBoard = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const CreateBoard = () => {
             <input
               required
               id="titleInput"
-              class="rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
+              class="text-lg sm:text-base rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 my-1 focus:dark:border-light-pink dark:focus:outline-none"
               disabled={loading()}
               onInput={(e) => setTitleInput(e.currentTarget.value)}
             />
@@ -90,8 +91,8 @@ const CreateBoard = () => {
             <p class="text-center text-red-500 my-2">{error()}</p>
           </Show>
           <div class="flex justify-center mt-2">
-            <button
-              class="cursor-pointer text-lg mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+            <Button
+              class=""
               disabled={loading()}
               onClick={() => createTag(titleInput(), descriptionInput())}
             >
@@ -103,7 +104,7 @@ const CreateBoard = () => {
                   Create New Board
                 </Match>
               </Switch>
-            </button>
+            </Button>
           </div>
         </Match>
       </Switch>

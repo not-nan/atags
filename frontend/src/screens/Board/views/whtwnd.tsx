@@ -28,6 +28,9 @@ export const whtwndView: RecordView<'com.whtwnd.blog.entry'> = {
   collection: 'com.whtwnd.blog.entry',
   hydrate,
   getAppviewLink,
+  info: {
+    name: 'Whtwnd'
+  }
 }
 
 export default whtwndView;

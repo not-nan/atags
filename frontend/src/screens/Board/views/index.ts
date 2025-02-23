@@ -9,11 +9,15 @@ import fallbackView from "./fallback";
 
 export type TaggedViewSkeleton = ReplaceAtUriTo<XyzJerobaTagsGetTaggedPosts.TaggedPostsView, 'record', 'uri'>;
 export type ToHydrateView = { skeleton: TaggedViewSkeleton, setRender: (render: () => JSX.Element) => void};
+export type AppviewInfo = {
+  name: string,
+}
 
 export type RecordView<Collection extends string> = {
   collection: Collection,
   hydrate: (views: ToHydrateView[]) => Promise<void>,
   getAppviewLink: (uri: AtUriParts) => string,
+  info: AppviewInfo,
 }
 
 type RecordViews<Views extends object> = {
@@ -39,20 +43,24 @@ function isSupportedView(collection: string): collection is keyof TypedViews {
   return viewKeys.includes(collection);
 }
 
+function selectView(key: ViewKeys) {
+  return key === 'fallback' 
+    ? fallbackView
+    : typedViews[key];
+}
 
 export type ViewObject = ToHydrateView & TaggedView & { viewKey: ViewKeys };
 export function createViewObject(skeleton: TaggedViewSkeleton): ViewObject {
   const viewKey = isSupportedView(skeleton.uri.collection) ? skeleton.uri.collection : 'fallback';
+  const view = selectView(viewKey);
   const [content, setContent] = createSignal<(() => JSX.Element) | undefined>();
   return { 
     skeleton,
     viewKey,
     content, 
     setRender: (render: () => JSX.Element) => setContent(() => render),
-    appviewUrl: 
-    viewKey === 'fallback' 
-      ? fallbackView.getAppviewLink(skeleton.uri) 
-      : typedViews[viewKey].getAppviewLink(skeleton.uri)
+    appviewUrl: view.getAppviewLink(skeleton.uri),
+    appviewInfo: view.info,
   };
 }
 

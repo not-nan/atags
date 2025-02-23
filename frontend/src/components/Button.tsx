@@ -14,7 +14,7 @@ const Button = (props: ButtonProps) => {
       disabled={props.disabled}
       onClick={props.onClick}
       classList={props.classList}
-      class={`${props.class ?? ''} cursor-pointer rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink`}>
+      class={`${props.class ?? ''} text-lg sm:text-base px-3 sm:px-2 py-3 sm:py-1 cursor-pointer rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold hover:bg-gray-100 dark:hover:bg-darkish-pink`}>
       { props.children }
     </button>
   );

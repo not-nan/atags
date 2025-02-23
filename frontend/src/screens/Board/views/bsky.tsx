@@ -34,22 +34,22 @@ const ImageEmbed = (props: { images: AppBskyEmbedImages.ViewImage[] }) => {
           <Image class="h-full rounded-md" image={props.images[0]} />
         </Match>
         <Match when={props.images.length === 2}>
-          <Image class="rounded-l-md mr-0.5" image={props.images[0]} />
-          <Image class="rounded-r-md ml-0.5" image={props.images[1]} />
+          <Image class="rounded-l-md mr-0.5 grow shrink basis-0" image={props.images[0]} />
+          <Image class="rounded-r-md ml-0.5 grow shrink basis-0" image={props.images[1]} />
         </Match>
         <Match when={props.images.length === 3}>
-          <Image class="rounded-l-md mr-0.5" image={props.images[0]} />
-          <div class="flex flex-col ml-0.5">
-            <Image class="h-full rounded-tr-md mb-0.5" image={props.images[1]} />
-            <Image class="h-full rounded-br-md mt-0.5" image={props.images[2]} />
+          <Image class="grow shrink basis-0 rounded-l-md mr-0.5" image={props.images[0]} />
+          <div class="grow shrink basis-0 flex flex-col ml-0.5">
+            <Image class="rounded-tr-md mb-0.5" image={props.images[1]} />
+            <Image class="rounded-br-md mt-0.5" image={props.images[2]} />
           </div>
         </Match>
         <Match when={props.images.length === 4}>
-          <div class="flex flex-col mr-0.5">
+          <div class="flex flex-col mr-0.5 grow shrink basis-0">
             <Image class="h-full rounded-tl-md mb-0.5" image={props.images[0]} />
             <Image class="h-full rounded-bl-md mt-0.5" image={props.images[1]} />
           </div>
-          <div class="flex flex-col ml-0.5">
+          <div class="flex flex-col ml-0.5 grow shrink basis-0">
             <Image class="h-full rounded-tr-md mb-0.5" image={props.images[2]} />
             <Image class="h-full rounded-br-md mt-0.5" image={props.images[3]} />
           </div>
@@ -95,6 +95,9 @@ export const bskyPostView: RecordView<'app.bsky.feed.post'> = {
   collection: 'app.bsky.feed.post',
   hydrate,
   getAppviewLink,
+  info: {
+    name: 'Bluesky'
+  }
 }
 
 export default bskyPostView;

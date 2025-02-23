@@ -1,11 +1,11 @@
 import { At, ComAtprotoRepoApplyWrites } from "@atcute/client/lexicons";
 import { A, useNavigate, useParams } from "@solidjs/router";
-import { Accessor, createResource, createSignal, For, JSX, Match, Show, Switch, useContext } from "solid-js";
+import { Accessor, createResource, createSignal, For, JSX, Match, onCleanup, Show, Switch, useContext } from "solid-js";
 import { getTag, getTagged } from "../../lib/appview";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { ActiveSession, sessionAssertActive, SessionCtx } from "../../lib/auth";
-import { Delete, Edit, Loading, OpenRecord, TagRemove } from "../../assets/icons";
-import { createViewObjectHydrated, instantiateViewObjectsHydrated, TaggedViewSkeleton } from "./views";
+import { Delete, Edit, Loading, MoreHoriz, OpenRecord, TagRemove } from "../../assets/icons";
+import { AppviewInfo, createViewObjectHydrated, instantiateViewObjectsHydrated, TaggedViewSkeleton } from "./views";
 import { atUriToParts, isDid, partsToAtUri } from "../../lib/util";
 import * as TID from "@atcute/tid";
 import Navigation from "../../components/Navigation";
@@ -18,6 +18,7 @@ export type TaggedView = {
   skeleton: TaggedViewSkeleton,
   content: Accessor<(() => JSX.Element) | undefined>,
   appviewUrl: string,
+  appviewInfo: AppviewInfo,
 }
 
 type EditingState =
@@ -235,7 +236,7 @@ const BoardScreen = () => {
           disableButtons={loadingDelete()}
           callback={(confirm) => confirm ? deleteTag() : setDeletingTag(false)} />
       </Show>
-      <div class="w-full px-4">
+      <div class="w-full px-1 sm:px-4">
         <Show when={tagError()}>
           <div class="mb-5">
             <p class="text-center text-xl font-bold">
@@ -252,10 +253,10 @@ const BoardScreen = () => {
               </div>
             </Match>
             <Match when={tag() && editingState.editing}>
-              <EditTag 
-                state={activeEdit(editingState)} 
+              <EditTag
+                state={activeEdit(editingState)}
                 setState={setEditingState}
-                done={(confirm) => confirm ? editTag() : setEditingState('editing', false) } />
+                done={(confirm) => confirm ? editTag() : setEditingState('editing', false)} />
             </Match>
           </Switch>
         </div>
@@ -276,8 +277,13 @@ const BoardScreen = () => {
               <div class="flex justify-between">
                 <Switch>
                   <Match when={item.content()}>
-                    <div class="my-3">
+                    <div class="flex flex-col grow pt-3 sm:pb-3">
                       {item.content()!()}
+                      <HamburgerMenu 
+                        appviewName={item.appviewInfo.name} 
+                        href={item.appviewUrl} 
+                        isOwner={session.active && session.did === params.did}
+                        unpin={() => removeTagged(item.skeleton.rkey)} />
                     </div>
                   </Match>
                   <Match when={!item.content()}>
@@ -286,7 +292,7 @@ const BoardScreen = () => {
                     </div>
                   </Match>
                 </Switch>
-                <div class="flex ml-3">
+                <div class="hidden sm:flex ml-3">
                   <A class="flex flex-col justify-center dark:text-theme-pink" href={item.appviewUrl} target="_blank"><OpenRecord /></A>
                   <Show when={session.active && session.did === params.did}>
                     <button
@@ -386,25 +392,25 @@ const ApplyTag = (props: ApplyTagProps) => {
 
   return (
     <div class="mb-3">
-      <div class="flex justify-between">
+      <div class="flex flex-col mx-1">
         <div class="flex flex-col justify-center">
-          <label class="px-2">Post URL or AtURI</label>
+          <label for="atUriInput" class="px-2 mb-1">Post URL or AtURI</label>
         </div>
         <input
           id="atUriInput"
           disabled={loading()}
           value={atUriInput()}
-          class="rounded-lg grow border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
-          onKeyDown={(ev) => ev.key === 'Enter' ? tagRecord(props.tagRkey, atUriInput()) : undefined }
-          onInput={(e) => setAtUriInput(e.currentTarget.value)}/>
+          class="rounded-lg text-lg sm:text-base grow border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
+          onKeyDown={(ev) => ev.key === 'Enter' ? tagRecord(props.tagRkey, atUriInput()) : undefined}
+          onInput={(e) => setAtUriInput(e.currentTarget.value)} />
       </div>
       <Show when={error}>
         <p class="text-center text-red-500 my-2">{error()}</p>
       </Show>
       <div class="flex justify-center mt-4">
-        <button
+        <Button
           disabled={loading()}
-          class="cursor-pointer mx-auto rounded-lg border border-solid disabled:text-gray-400 border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink"
+          class=""
           onClick={() => tagRecord(props.tagRkey, atUriInput())}
         >
           <Switch>
@@ -415,21 +421,20 @@ const ApplyTag = (props: ApplyTagProps) => {
               Add to board
             </Match>
           </Switch>
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
 
 type EditTagProps = {
-  state: ActiveEdit, 
+  state: ActiveEdit,
   setState: SetStoreFunction<EditingState>,
   done: (confirm: boolean) => void,
 }
 const EditTag = (props: EditTagProps) => {
   return (
     <div class="flex flex-col">
-      <p> { props.state.title } </p>
       <input
         disabled={props.state.loading}
         onInput={(e) => props.setState({ title: e.target.value })}
@@ -455,6 +460,63 @@ const EditTag = (props: EditTagProps) => {
         <Button disabled={props.state.loading} onClick={() => props.done(false)}>
           Cancel
         </Button>
+      </div>
+    </div>
+  );
+}
+
+const HamburgerMenu = (props: { href: string, appviewName: string, isOwner: boolean, unpin: () => void }) => {
+  const [popoutOpen, setPopoutOpen] = createSignal(false);
+  const [popoutPosition, setPopoutPosition] = createStore({ x: 0, y: 0 });
+  let thisElement: HTMLDivElement | undefined;
+
+  const openMenu: JSX.EventHandler<HTMLButtonElement, MouseEvent> = (ev) => {
+    setPopoutOpen(true);
+    setPopoutPosition({ x: ev.clientX, y: ev.clientY });
+    document.addEventListener('click', allClickListener);
+    document.addEventListener('scroll', scrollListener);
+  }
+
+  const closeMenu = () => {
+    setPopoutOpen(false);
+    document.removeEventListener('click', allClickListener);
+    document.removeEventListener('scroll', scrollListener);
+  }
+
+  const allClickListener = (ev: MouseEvent) => {
+    if (ev.target instanceof Node && !thisElement?.contains(ev.target)) {
+      closeMenu();
+    }
+  };
+
+  const scrollListener = () => {
+    console.log('a');
+    closeMenu();
+  }
+
+  onCleanup(() => {
+    if(popoutOpen()) document.removeEventListener('click', allClickListener);
+  });
+
+  return (
+    <div class="flex sm:hidden flex-row-reverse">
+      <div ref={thisElement} class="w-fit">
+        <button
+          onClick={openMenu}
+          class="pt-1 pb-1 px-2 text-gray-500">
+          <MoreHoriz />
+        </button>
+        <div
+          class="absolute hidden data-[open=true]:block right-0"
+          style={{ top: `${popoutPosition.y}px` }}
+          data-open={popoutOpen()}>
+          <div class="flex flex-col divide-y text-lg divide-gray-300 mr-1 rounded-sm z-10 border border-solid border-gray-300 bg-white dark:bg-dark-background-color">
+            <A class="p-2" onClick={closeMenu} href={props.href} target="_blank">Open in {props.appviewName}</A>
+            <Show when={props.isOwner}>
+              <button class="p-2" onClick={() => { closeMenu(); props.unpin() }}>Unpin</button>
+            </Show>
+          </div>
+        </div>
       </div>
     </div>
   );

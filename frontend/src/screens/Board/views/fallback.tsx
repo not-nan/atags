@@ -28,6 +28,9 @@ export const fallbackView: RecordView<string> = {
   collection: '*',
   hydrate,
   getAppviewLink,
+  info: {
+    name: 'PDSls'
+  }
 }
 
 export default fallbackView;

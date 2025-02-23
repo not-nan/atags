@@ -1,4 +1,5 @@
 import { Portal } from "solid-js/web";
+import Button from "./Button";
 
 type Props = { 
   title: string, 
@@ -18,18 +19,18 @@ const ConfirmDialog = (props: Props) => {
               <p>{ props.subtitle ?? '' }</p>
             </div>
             <div class="flex justify-center mt-2">
-              <button 
+              <Button 
                 onClick={() => props.callback(true)}
                 disabled={!!props.disableButtons}
-                class="cursor-pointer mx-auto rounded-lg border border-solid border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink">
+                class="mx-auto">
                 Yes
-              </button>
-              <button 
+              </Button>
+              <Button 
                 onClick={() => props.callback(false)}
                 disabled={!!props.disableButtons}
-                class="cursor-pointer mx-auto rounded-lg border border-solid border-gray-400 dark:border-theme-pink font-bold px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink">
+                class="mx-auto">
                 No
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -57,7 +57,7 @@ const Sidebar = (props: SidebarProps) => {
             </AButton>
           </Show>
           <Show when={session.active}>
-            <div class="flex flex-col ml-2 my-2 gap-1 w-fit">
+            <div class="flex flex-col my-2 gap-1">
               <div>
                 <div 
                   classList={{ 
@@ -69,19 +69,20 @@ const Sidebar = (props: SidebarProps) => {
                     class="dark:text-theme-pink"
                     href="/account"
                     onClick={collapseIfSmallScreen}>
-                    <User />
+                    <User class="sm:w-8 sm:h-8" width={48} height={48} />
                   </A>
                 </div>
               </div>
-              <AButton
+              <A
                 href="/create-board"
                 onClick={collapseIfSmallScreen}
-                classList={{ 
+                class="inline-block text-lg sm:text-base py-3 sm:py-1 px-2 cursor-pointer sm:border sm:w-fit border-t border-b border-solid disabled:text-gray-400 border-gray-300 dark:border-theme-pink font-bold hover:bg-gray-100 dark:hover:bg-darkish-pink"
+                classList={{
                   'bg-gray-100': props.selected === 'create',
                   'dark:bg-darkish-pink': props.selected === 'create',
                 }}>
                 Create new board
-              </AButton>
+              </A>
             </div>
             <button class="flex text-lg" onClick={() => setTagsExpanded(!tagsExpanded())}>
               <Show when={tagsExpanded()} fallback={<ChevronRight width={ChevronSize} height={ChevronSize} />}>
@@ -103,7 +104,7 @@ const Sidebar = (props: SidebarProps) => {
                             'bg-gray-100': props.selected === 'tag' && item.rkey === props.selectedValue,
                             'dark:bg-darkish-pink': props.selected === 'tag' && item.rkey === props.selectedValue,
                           }}
-                          class="px-2 py-1 hover:bg-gray-100 dark:hover:bg-darkish-pink cursor-pointer">
+                          class="text-lg sm:text-base py-3 sm:py-1 px-2 hover:bg-gray-100 dark:hover:bg-darkish-pink cursor-pointer">
                           {item.title.length ? item.title : item.rkey}
                         </A>
                       )}
