@@ -30,6 +30,10 @@ const CreateBoard = () => {
           }
         }
       });
+
+      // TODO: this is a hack to ensure the appview got it, make an actual mechanism
+      await wait(1000);
+
       // Since we got this from the pds, we're just gonna assume its correct
       const { rkey } = atUriToParts(res.data.uri)!;
       mutateTags((tags) => {
@@ -42,10 +46,7 @@ const CreateBoard = () => {
           return [tag];
         }
       });
-
-      // TODO: this is a hack to ensure the appview got it, make an actual mechanism
-      await wait(1000);
-
+      
       navigate(`/profile/${session.did}/board/${rkey}`);
     } catch (err: any) {
       console.error(err);

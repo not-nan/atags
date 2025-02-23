@@ -248,7 +248,7 @@ const BoardScreen = () => {
             <Match when={tag() && !editingState.editing}>
               <p class="text-center text-xl font-bold">{tag()?.title}</p>
               <div class="flex justify-center mt-1">
-                <p class="text-sm max-w-sm break-words">{tag()?.description}</p>
+                <p class="text-sm max-w-sm break-words whitespace-pre-wrap">{tag()?.description}</p>
               </div>
             </Match>
             <Match when={tag() && editingState.editing}>
@@ -395,7 +395,8 @@ const ApplyTag = (props: ApplyTagProps) => {
           disabled={loading()}
           value={atUriInput()}
           class="rounded-lg grow border disabled:text-gray-400 border-gray-400 dark:border-theme-pink px-2 py-1 focus:dark:border-light-pink dark:focus:outline-none"
-          onInput={(e) => setAtUriInput(e.currentTarget.value)} />
+          onKeyDown={(ev) => ev.key === 'Enter' ? tagRecord(props.tagRkey, atUriInput()) : undefined }
+          onInput={(e) => setAtUriInput(e.currentTarget.value)}/>
       </div>
       <Show when={error}>
         <p class="text-center text-red-500 my-2">{error()}</p>
@@ -411,7 +412,7 @@ const ApplyTag = (props: ApplyTagProps) => {
               Tagging...
             </Match>
             <Match when={!loading()}>
-              Apply Tag
+              Add to board
             </Match>
           </Switch>
         </button>
